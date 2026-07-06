@@ -47,109 +47,69 @@ jobs:
       - name: ✅ Verify EAS project config
         working-directory: artifacts/sportzfy-mobile
         run: |
-          if ! grep -q '"projectId"' app.json 2>/dev/null; then
-            echo "❌ ERROR: EAS project not initialized!"
-            echo ""
-            echo "Run these commands locally and push the result:"
-            echo "  cd artifacts/sportzfy-mobile"
-            echo "  npm install -g eas-cli"
-            echo "  eas login"
-            echo "  eas init"
-            echo "  git add app.json && git commit -m 'chore: init EAS project' && git push"
-            exit 1
-          fi
-          echo "✅ EAS project ID found in app.json"
+          echo "=== app.json extra.eas check ==="
+          cat app.json | grep -A3 '"eas"' || echo "No eas section found"
+          echo "=== eas whoami ==="
+          eas whoami
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 🏗️ EAS Cloud Build (wait for completion)
-        id: eas_build
+      - name: 🏗️ EAS Cloud Build
         working-directory: artifacts/sportzfy-mobile
-        shell: bash
         run: |
-          set -eo pipefail
-          BUILD_OUTPUT=$(eas build \
+          echo "Starting EAS build..."
+          eas build \
             --platform android \
             --profile ${{ github.event.inputs.profile || 'preview' }} \
             --non-interactive \
             --wait \
-            --json \
-            2>&1 | tee /tmp/eas-build.log)
-
-          echo "--- Last 20 lines of build log ---"
-          tail -20 /tmp/eas-build.log
-
-          # Try to extract URL from JSON output
-          APK_URL=$(echo "$BUILD_OUTPUT" | node -e "
-            let raw = '';
-            process.stdin.on('data', d => raw += d);
-            process.stdin.on('end', () => {
-              try {
-                const match = raw.match(/\[[\s\S]*\]|\{[\s\S]*\}/);
-                if (match) {
-                  const parsed = JSON.parse(match[0]);
-                  const arr = Array.isArray(parsed) ? parsed : [parsed];
-                  const url = arr[0]?.artifacts?.buildUrl || '';
-                  if (url) { console.log(url); }
-                }
-              } catch(e) {}
-            });
-          " 2>/dev/null || true)
-
-          # Fallback: grep .apk URL from log
-          if [ -z "$APK_URL" ]; then
-            APK_URL=$(grep -oE 'https://[^ ]+\.apk' /tmp/eas-build.log | head -1 || true)
-          fi
-
-          if [ -n "$APK_URL" ]; then
-            echo "apk_url=$APK_URL" >> $GITHUB_OUTPUT
-            echo "✅ APK URL found: $APK_URL"
-          else
-            echo "apk_url=" >> $GITHUB_OUTPUT
-          fi
+            2>&1 | tee /tmp/eas-build.log
+          echo "=== Build log tail ==="
+          tail -30 /tmp/eas-build.log
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📥 Download APK from EAS
+      - name: 📥 Download APK
         working-directory: artifacts/sportzfy-mobile
         run: |
-          set -eo pipefail
           mkdir -p build
-          APK_URL="${{ steps.eas_build.outputs.apk_url }}"
 
+          # Extract URL from EAS build log
+          APK_URL=$(grep -oE 'https://[^ ]+\.apk' /tmp/eas-build.log | head -1 || true)
+
+          # Fallback: use eas build:list
           if [ -z "$APK_URL" ]; then
-            # Last resort: query eas build:list
-            echo "Querying EAS for latest build..."
+            echo "Trying eas build:list..."
             eas build:list \
               --platform android \
               --status finished \
               --limit 1 \
               --non-interactive \
-              --json > /tmp/eas-builds.txt 2>/dev/null || true
-
+              --json 2>/dev/null > /tmp/builds.json || true
+            cat /tmp/builds.json
             APK_URL=$(node -e "
-              const fs = require('fs');
-              const raw = fs.readFileSync('/tmp/eas-builds.txt', 'utf8');
-              const match = raw.match(/\[[\s\S]*\]/);
-              if (!match) process.exit(1);
-              const builds = JSON.parse(match[0]);
-              const url = builds[0]?.artifacts?.buildUrl || '';
-              if (url) { console.log(url); } else { process.exit(1); }
-            " 2>/dev/null) || true
+              try {
+                const b = JSON.parse(require('fs').readFileSync('/tmp/builds.json','utf8'));
+                const arr = Array.isArray(b) ? b : [b];
+                console.log(arr[0]?.artifacts?.buildUrl || '');
+              } catch(e) { console.log(''); }
+            " 2>/dev/null || true)
           fi
 
+          echo "APK URL: $APK_URL"
           if [ -z "$APK_URL" ] || [ "$APK_URL" = "null" ]; then
-            echo "❌ No APK URL found. Check EAS build logs above."
+            echo "❌ No APK URL found"
+            echo "=== Full EAS log ==="
+            cat /tmp/eas-build.log
             exit 1
           fi
 
-          echo "Downloading APK from: $APK_URL"
           curl -fL "$APK_URL" -o ./build/sportzfy.apk
-          echo "✅ APK ready: $(du -sh ./build/sportzfy.apk)"
+          echo "✅ APK: $(du -sh ./build/sportzfy.apk)"
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📤 Upload APK as GitHub artifact
+      - name: 📤 Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: sportzfy-apk
@@ -161,5 +121,4 @@ jobs:
         run: |
           echo "## ✅ Sportzfy APK Ready!" >> $GITHUB_STEP_SUMMARY
           echo "- **Profile:** ${{ github.event.inputs.profile || 'preview' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Platform:** Android APK" >> $GITHUB_STEP_SUMMARY
           echo "⬆️ Download **sportzfy-apk** from Artifacts above" >> $GITHUB_STEP_SUMMARY
