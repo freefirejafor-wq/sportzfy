@@ -25,9 +25,6 @@ android {
             )
             signingConfig = signingConfigs.getByName("debug")
         }
-        debug {
-            isDebuggable = true
-        }
     }
 
     compileOptions {
@@ -42,6 +39,13 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+    // FFmpeg-kit native libs জন্য
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
 }
 
 dependencies {
@@ -52,19 +56,20 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.activity:activity-ktx:1.8.2")
 
-    // Media3 ExoPlayer — HLS, DASH, M3U8 সাপোর্ট
-    implementation("androidx.media3:media3-exoplayer:1.2.1")
-    implementation("androidx.media3:media3-exoplayer-hls:1.2.1")
-    implementation("androidx.media3:media3-exoplayer-dash:1.2.1")
-    implementation("androidx.media3:media3-exoplayer-rtsp:1.2.1")
-    implementation("androidx.media3:media3-ui:1.2.1")
-    implementation("androidx.media3:media3-session:1.2.1")
-    implementation("androidx.media3:media3-common:1.2.1")
+    // Media3 ExoPlayer — HLS, DASH, M3U8
+    val media3Version = "1.2.1"
+    implementation("androidx.media3:media3-exoplayer:$media3Version")
+    implementation("androidx.media3:media3-exoplayer-hls:$media3Version")
+    implementation("androidx.media3:media3-exoplayer-dash:$media3Version")
+    implementation("androidx.media3:media3-exoplayer-rtsp:$media3Version")
+    implementation("androidx.media3:media3-ui:$media3Version")
+    implementation("androidx.media3:media3-session:$media3Version")
+    implementation("androidx.media3:media3-common:$media3Version")
 
-    // FFmpeg এক্সট্রা কোডেক
-    implementation("com.arthenica:ffmpeg-kit-full:6.0-2")
+    // FFmpeg-kit — extra codec support (min-gpl = ছোট সাইজ, কাজ করে)
+    implementation("com.arthenica:ffmpeg-kit-min-gpl:6.0-2")
 
-    // Lifecycle & Service
+    // Lifecycle
     implementation("androidx.lifecycle:lifecycle-service:2.7.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
 }
