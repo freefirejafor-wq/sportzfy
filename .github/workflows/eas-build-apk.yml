@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       profile:
-        description: 'EAS build profile (APK only)'
+        description: 'EAS build profile'
         required: true
         default: 'preview'
         type: choice
@@ -44,16 +44,58 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 🏗️ Build APK with EAS (waits for cloud build)
+      - name: 🏗️ EAS Cloud Build (wait for completion)
         working-directory: artifacts/sportzfy-mobile
         run: |
-          mkdir -p build
           eas build \
             --platform android \
             --profile ${{ github.event.inputs.profile || 'preview' }} \
             --non-interactive \
             --wait \
-            --output ./build/sportzfy.apk
+            2>&1 | tee /tmp/eas-build.log
+          echo "--- Build log ---"
+          cat /tmp/eas-build.log
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📥 Download APK from EAS
+        working-directory: artifacts/sportzfy-mobile
+        run: |
+          mkdir -p build
+
+          # Get the latest finished build's download URL
+          BUILD_JSON=$(eas build:list \
+            --platform android \
+            --status finished \
+            --limit 1 \
+            --non-interactive \
+            --json 2>/dev/null || echo "[]")
+
+          BUILD_URL=$(node -e "
+            const data = \`$BUILD_JSON\`;
+            try {
+              const builds = JSON.parse(data);
+              const url = (builds[0] || {})?.artifacts?.buildUrl || '';
+              console.log(url);
+            } catch(e) { console.log(''); }
+          ")
+
+          echo "APK URL: $BUILD_URL"
+
+          if [ -n "$BUILD_URL" ]; then
+            curl -L "$BUILD_URL" -o ./build/sportzfy.apk
+            echo "✅ APK downloaded: $(du -sh ./build/sportzfy.apk)"
+          else
+            # Fallback: grep URL from build log
+            FALLBACK_URL=$(grep -oP 'https://expo\.dev/artifacts/eas/[^\s"]+' /tmp/eas-build.log | head -1)
+            if [ -n "$FALLBACK_URL" ]; then
+              curl -L "$FALLBACK_URL" -o ./build/sportzfy.apk
+              echo "✅ APK downloaded via fallback URL"
+            else
+              echo "❌ Could not find APK URL. Check expo.dev manually."
+              exit 1
+            fi
+          fi
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -67,10 +109,7 @@ jobs:
 
       - name: 🎉 Build Summary
         run: |
-          echo "## ✅ Sportzfy APK Build Complete!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ✅ Sportzfy APK Ready!" >> $GITHUB_STEP_SUMMARY
           echo "- **Profile:** ${{ github.event.inputs.profile || 'preview' }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Platform:** Android APK" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "⬆️ Download the APK from the **Artifacts** section above" >> $GITHUB_STEP_SUMMARY
+          echo "⬆️ Download **sportzfy-apk** from Artifacts above" >> $GITHUB_STEP_SUMMARY
