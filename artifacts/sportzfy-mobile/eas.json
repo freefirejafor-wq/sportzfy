@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 14.0.0"
+    "version": ">= 14.0.0",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -8,6 +9,9 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "node": {
+        "version": "20.19.0"
       }
     },
     "preview": {
@@ -17,6 +21,9 @@
       },
       "ios": {
         "simulator": true
+      },
+      "node": {
+        "version": "20.19.0"
       }
     },
     "production": {
