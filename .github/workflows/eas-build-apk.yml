@@ -1,4 +1,4 @@
-name: 🏗️ Build Sportzfy APK (EAS)
+name: 🏗️ Build Sportzfy APK
 
 on:
   push:
@@ -6,15 +6,6 @@ on:
     paths:
       - 'artifacts/sportzfy-mobile/**'
   workflow_dispatch:
-    inputs:
-      profile:
-        description: 'EAS build profile'
-        required: true
-        default: 'preview'
-        type: choice
-        options:
-          - preview
-          - development
 
 jobs:
   build-android:
@@ -24,6 +15,12 @@ jobs:
     steps:
       - name: 📦 Checkout repository
         uses: actions/checkout@v4
+
+      - name: ☕ Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
@@ -35,82 +32,48 @@ jobs:
         with:
           version: 9
 
-      - name: 📥 Install dependencies (monorepo root)
+      - name: 📥 Install monorepo dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: 🔧 Setup EAS CLI
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+      - name: 🔧 Setup Expo CLI
+        working-directory: artifacts/sportzfy-mobile
+        run: npx expo --version
 
-      - name: 🏗️ EAS Cloud Build
-        id: eas_build
+      - name: 🏗️ Expo Prebuild (generate Android project)
         working-directory: artifacts/sportzfy-mobile
         run: |
-          echo "Building with EAS..."
-          eas build \
-            --platform android \
-            --profile ${{ github.event.inputs.profile || 'preview' }} \
-            --non-interactive \
-            --wait \
-            2>&1 | tee /tmp/eas-build.log
-          echo "=== Last 40 lines of log ==="
-          tail -40 /tmp/eas-build.log
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-          EAS_BUILD_PACKAGE_MANAGER: pnpm
-
-      - name: 📥 Download APK
-        working-directory: artifacts/sportzfy-mobile
-        run: |
-          mkdir -p build
-
-          # Extract .apk URL from build log
-          APK_URL=$(grep -oE 'https://[^ ]+\.apk' /tmp/eas-build.log | head -1 || true)
-
-          # Fallback: query latest finished build
-          if [ -z "$APK_URL" ]; then
-            echo "Querying eas build:list..."
-            eas build:list \
-              --platform android \
-              --status finished \
-              --limit 1 \
-              --non-interactive \
-              --json > /tmp/builds.json 2>/dev/null || true
-            echo "=== builds.json ==="
-            cat /tmp/builds.json
-            APK_URL=$(node -e "
-              try {
-                const b = JSON.parse(require('fs').readFileSync('/tmp/builds.json','utf8'));
-                const arr = Array.isArray(b) ? b : [b];
-                console.log(arr[0]?.artifacts?.buildUrl || '');
-              } catch(e) {}
-            " 2>/dev/null || echo "")
-          fi
-
-          echo "APK URL: '$APK_URL'"
-          if [ -z "$APK_URL" ] || [ "$APK_URL" = "null" ]; then
-            echo "❌ No APK URL found. Full log:"
-            cat /tmp/eas-build.log
-            exit 1
-          fi
-
-          curl -fL "$APK_URL" -o ./build/sportzfy.apk
-          echo "✅ APK: $(du -sh ./build/sportzfy.apk)"
+          npx expo prebuild --platform android --clean --no-install
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📤 Upload APK
+      - name: 🔨 Build Debug APK with Gradle
+        working-directory: artifacts/sportzfy-mobile/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug \
+            --no-daemon \
+            --stacktrace \
+            -Dorg.gradle.parallel=true \
+            -Dorg.gradle.daemon=false
+
+      - name: 📋 Find APK
+        id: find_apk
+        run: |
+          APK=$(find artifacts/sportzfy-mobile/android -name "*.apk" -not -path "*/test*" | head -1)
+          echo "APK found: $APK"
+          echo "apk_path=$APK" >> $GITHUB_OUTPUT
+          ls -lh $(dirname "$APK") || true
+
+      - name: 📤 Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
           name: sportzfy-apk
-          path: artifacts/sportzfy-mobile/build/sportzfy.apk
+          path: ${{ steps.find_apk.outputs.apk_path }}
           if-no-files-found: error
           retention-days: 30
 
       - name: 🎉 Build Summary
         run: |
           echo "## ✅ Sportzfy APK Ready!" >> $GITHUB_STEP_SUMMARY
-          echo "- **Profile:** ${{ github.event.inputs.profile || 'preview' }}" >> $GITHUB_STEP_SUMMARY
-          echo "⬆️ Download **sportzfy-apk** from Artifacts above" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type:** Debug APK (installable on any Android device)" >> $GITHUB_STEP_SUMMARY
+          echo "⬆️ Download **sportzfy-apk** from the Artifacts section above" >> $GITHUB_STEP_SUMMARY
