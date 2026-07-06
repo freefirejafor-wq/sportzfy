@@ -45,6 +45,7 @@ jobs:
           npx expo prebuild --platform android --clean --no-install
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_PUBLIC_API_URL: 24350739-b2a8-4327-854a-9bdc1d4baa0e-00-1w3xnw1h5g2s.sisko.replit.dev
 
       - name: 🔨 Build Debug APK with Gradle
         working-directory: artifacts/sportzfy-mobile/android
@@ -55,6 +56,8 @@ jobs:
             --stacktrace \
             -Dorg.gradle.parallel=true \
             -Dorg.gradle.daemon=false
+        env:
+          EXPO_PUBLIC_API_URL: 24350739-b2a8-4327-854a-9bdc1d4baa0e-00-1w3xnw1h5g2s.sisko.replit.dev
 
       - name: 📋 Find APK
         id: find_apk
@@ -75,5 +78,6 @@ jobs:
       - name: 🎉 Build Summary
         run: |
           echo "## ✅ Sportzfy APK Ready!" >> $GITHUB_STEP_SUMMARY
-          echo "- **Type:** Debug APK (installable on any Android device)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type:** Debug APK" >> $GITHUB_STEP_SUMMARY
+          echo "- **API:** 24350739-b2a8-4327-854a-9bdc1d4baa0e-00-1w3xnw1h5g2s.sisko.replit.dev" >> $GITHUB_STEP_SUMMARY
           echo "⬆️ Download **sportzfy-apk** from the Artifacts section above" >> $GITHUB_STEP_SUMMARY
