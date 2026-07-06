@@ -12,19 +12,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.common.TrackSelectionOverride
-import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.hls.HlsMediaSource
-import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import com.sportzfy.app.databinding.ActivityPlayerBinding
 
 class PlayerActivity : AppCompatActivity() {
 
     companion object {
-        const val EXTRA_URL = "stream_url"
+        const val EXTRA_URL   = "stream_url"
         const val EXTRA_TITLE = "stream_title"
     }
 
@@ -32,17 +30,16 @@ class PlayerActivity : AppCompatActivity() {
     private var player: ExoPlayer? = null
     private lateinit var trackSelector: DefaultTrackSelector
 
-    private var streamUrl = ""
+    private var streamUrl   = ""
     private var streamTitle = ""
-    private var isLocked = false
-    private var isFullscreen = true
+    private var isLocked    = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        streamUrl = intent.getStringExtra(EXTRA_URL) ?: ""
+        streamUrl   = intent.getStringExtra(EXTRA_URL)   ?: ""
         streamTitle = intent.getStringExtra(EXTRA_TITLE) ?: "Live Stream"
 
         if (streamUrl.isEmpty()) {
@@ -57,45 +54,33 @@ class PlayerActivity : AppCompatActivity() {
         setupControls()
     }
 
+    // ─── Player ───────────────────────────────────────────────────────────────
+
     private fun setupPlayer() {
-        // FFmpeg + ExoPlayer রেন্ডারার — এক্সট্রা কোডেক সাপোর্ট
-        val renderersFactory = DefaultRenderersFactory(this).apply {
-            setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
-        }
+        trackSelector = DefaultTrackSelector(this)
 
-        trackSelector = DefaultTrackSelector(this).apply {
-            setParameters(
-                buildUponParameters()
-                    .setPreferredVideoMimeType(MimeTypes.VIDEO_H264)
-                    .setMaxVideoSizeSd() // Default: SD
-            )
-        }
-
-        player = ExoPlayer.Builder(this, renderersFactory)
+        player = ExoPlayer.Builder(this)
             .setTrackSelector(trackSelector)
-            .setMediaSourceFactory(DefaultMediaSourceFactory(this))
             .build()
-            .also { exoPlayer ->
-                binding.playerView.player = exoPlayer
+            .also { exo ->
+                binding.playerView.player = exo
 
                 val mediaItem = when {
-                    streamUrl.contains(".m3u8") -> MediaItem.Builder()
-                        .setUri(streamUrl)
-                        .setMimeType(MimeTypes.APPLICATION_M3U8) // HLS
-                        .build()
-                    streamUrl.contains(".mpd") -> MediaItem.Builder()
-                        .setUri(streamUrl)
-                        .setMimeType(MimeTypes.APPLICATION_MPD) // DASH
-                        .build()
+                    streamUrl.contains(".m3u8") ->
+                        MediaItem.Builder().setUri(streamUrl)
+                            .setMimeType(MimeTypes.APPLICATION_M3U8).build()
+                    streamUrl.contains(".mpd") ->
+                        MediaItem.Builder().setUri(streamUrl)
+                            .setMimeType(MimeTypes.APPLICATION_MPD).build()
                     else -> MediaItem.fromUri(streamUrl)
                 }
 
-                exoPlayer.setMediaItem(mediaItem)
-                exoPlayer.prepare()
-                exoPlayer.play()
+                exo.setMediaItem(mediaItem)
+                exo.prepare()
+                exo.play()
 
-                exoPlayer.addListener(object : Player.Listener {
-                    override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                exo.addListener(object : Player.Listener {
+                    override fun onPlayerError(error: PlaybackException) {
                         Toast.makeText(
                             this@PlayerActivity,
                             "স্ট্রিম লোড হয়নি: ${error.message}",
@@ -103,132 +88,119 @@ class PlayerActivity : AppCompatActivity() {
                         ).show()
                     }
 
-                    override fun onTracksChanged(tracks: androidx.media3.common.Tracks) {
-                        // Quality tracks পাওয়া গেলে Quality button সক্রিয় করি
-                        val hasMultipleQualities = tracks.groups.any { group ->
-                            group.type == C.TRACK_TYPE_VIDEO && group.length > 1
+                    override fun onTracksChanged(tracks: Tracks) {
+                        val hasVariants = tracks.groups.any { g ->
+                            g.type == C.TRACK_TYPE_VIDEO && g.length > 1
                         }
-                        binding.btnQuality.isEnabled = hasMultipleQualities
+                        binding.btnQuality.isEnabled = hasVariants
                     }
                 })
             }
     }
 
+    // ─── Controls ─────────────────────────────────────────────────────────────
+
     private fun setupControls() {
-        // Back Button
+        // ← Back
         binding.btnBack.setOnClickListener {
             if (!isLocked) finish()
         }
 
-        // Lock Button — সব control বন্ধ করে
+        // 🔒 Lock
         binding.btnLock.setOnClickListener {
             isLocked = true
-            binding.topControlsBar.visibility = View.GONE
+            binding.topControlsBar.visibility  = View.GONE
             binding.bottomControlsBar.visibility = View.GONE
-            binding.lockOverlay.visibility = View.VISIBLE
+            binding.lockOverlay.visibility      = View.VISIBLE
             Toast.makeText(this, "🔒 কন্ট্রোল লক হয়েছে", Toast.LENGTH_SHORT).show()
         }
 
-        // Unlock Button
+        // 🔓 Unlock
         binding.btnUnlock.setOnClickListener {
             isLocked = false
-            binding.lockOverlay.visibility = View.GONE
-            binding.topControlsBar.visibility = View.VISIBLE
+            binding.lockOverlay.visibility      = View.GONE
+            binding.topControlsBar.visibility  = View.VISIBLE
             binding.bottomControlsBar.visibility = View.VISIBLE
             Toast.makeText(this, "🔓 কন্ট্রোল আনলক হয়েছে", Toast.LENGTH_SHORT).show()
         }
 
-        // Quality Select — HD/SD বেছে নেওয়া
-        binding.btnQuality.setOnClickListener {
-            showQualityDialog()
-        }
+        // 🎚️ Quality
+        binding.btnQuality.setOnClickListener { showQualityDialog() }
 
-        // Floating Player — মিনি পপআপ প্লেয়ার
-        binding.btnFloating.setOnClickListener {
-            startFloatingPlayer()
-        }
+        // 🪟 Floating
+        binding.btnFloating.setOnClickListener { startFloatingPlayer() }
 
-        // Fullscreen toggle
-        binding.btnFullscreen.setOnClickListener {
-            toggleFullscreen()
-        }
+        // ⛶ Fullscreen toggle
+        binding.btnFullscreen.setOnClickListener { toggleOrientation() }
     }
 
-    // Quality Dialog — HD / SD / Auto
+    // ─── Quality Dialog ────────────────────────────────────────────────────────
+
     private fun showQualityDialog() {
         val tracks = player?.currentTracks ?: return
-
         val videoGroups = tracks.groups.filter { it.type == C.TRACK_TYPE_VIDEO }
+
         if (videoGroups.isEmpty()) {
             Toast.makeText(this, "কোয়ালিটি তথ্য পাওয়া যায়নি", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val group = videoGroups.first()
-        val qualities = mutableListOf("Auto")
-        val heightList = mutableListOf(-1) // Auto = -1
+        val group   = videoGroups.first()
+        val labels  = mutableListOf("Auto")
+        val heights = mutableListOf(-1)
 
         for (i in 0 until group.length) {
-            if (group.isTrackSupported(i)) {
-                val format = group.getTrackFormat(i)
-                val label = when {
-                    format.height >= 1080 -> "1080p (Full HD)"
-                    format.height >= 720  -> "720p (HD)"
-                    format.height >= 480  -> "480p (SD)"
-                    format.height >= 360  -> "360p"
-                    format.height > 0     -> "${format.height}p"
-                    else                  -> "Track ${i + 1}"
-                }
-                qualities.add(label)
-                heightList.add(format.height)
+            if (!group.isTrackSupported(i)) continue
+            val fmt = group.getTrackFormat(i)
+            val label = when {
+                fmt.height >= 1080 -> "1080p Full HD"
+                fmt.height >= 720  -> "720p HD"
+                fmt.height >= 480  -> "480p SD"
+                fmt.height >= 360  -> "360p"
+                fmt.height > 0     -> "${fmt.height}p"
+                else               -> "Track ${i + 1}"
             }
+            labels.add(label)
+            heights.add(fmt.height)
         }
 
         AlertDialog.Builder(this)
             .setTitle("কোয়ালিটি বেছে নিন")
-            .setItems(qualities.toTypedArray()) { _, which ->
-                val selectedHeight = heightList[which]
-                if (selectedHeight == -1) {
-                    // Auto mode
-                    trackSelector.setParameters(
-                        trackSelector.buildUponParameters().clearVideoSizeConstraints()
-                    )
+            .setItems(labels.toTypedArray()) { _, which ->
+                val h = heights[which]
+                val params = trackSelector.buildUponParameters()
+                if (h == -1) {
+                    params.clearVideoSizeConstraints()
                     binding.btnQuality.text = "Auto"
                 } else {
-                    // নির্দিষ্ট quality
-                    val label = qualities[which].substringBefore(" ")
-                    binding.btnQuality.text = label
-                    trackSelector.setParameters(
-                        trackSelector.buildUponParameters()
-                            .setMaxVideoSize(Int.MAX_VALUE, selectedHeight)
-                            .setMinVideoSize(0, selectedHeight)
-                    )
+                    params.setMaxVideoSize(Int.MAX_VALUE, h).setMinVideoSize(0, h)
+                    binding.btnQuality.text = labels[which].substringBefore(" ")
                 }
+                trackSelector.setParameters(params)
             }
             .show()
     }
 
-    // Floating Player চালু করো
+    // ─── Floating Player ───────────────────────────────────────────────────────
+
     private fun startFloatingPlayer() {
         val intent = Intent(this, FloatingPlayerService::class.java).apply {
-            putExtra(FloatingPlayerService.EXTRA_URL, streamUrl)
+            putExtra(FloatingPlayerService.EXTRA_URL,   streamUrl)
             putExtra(FloatingPlayerService.EXTRA_TITLE, streamTitle)
         }
         startForegroundService(intent)
-        // Player Activity বন্ধ করি — ব্যাকগ্রাউন্ডে যাব
         player?.stop()
         finish()
     }
 
-    private fun toggleFullscreen() {
-        if (isFullscreen) {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            isFullscreen = false
-        } else {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            enableFullscreen()
-            isFullscreen = true
-        }
+    // ─── Fullscreen ────────────────────────────────────────────────────────────
+
+    private fun toggleOrientation() {
+        requestedOrientation =
+            if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            else
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
     }
 
     private fun enableFullscreen() {
@@ -236,7 +208,8 @@ class PlayerActivity : AppCompatActivity() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             window.insetsController?.apply {
                 hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                systemBarsBehavior =
+                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } else {
             @Suppress("DEPRECATION")
@@ -248,20 +221,9 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        player?.pause()
-    }
+    // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
-    override fun onResume() {
-        super.onResume()
-        player?.play()
-        enableFullscreen()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player?.release()
-        player = null
-    }
+    override fun onPause()   { super.onPause();   player?.pause() }
+    override fun onResume()  { super.onResume();  player?.play(); enableFullscreen() }
+    override fun onDestroy() { super.onDestroy(); player?.release(); player = null }
 }
