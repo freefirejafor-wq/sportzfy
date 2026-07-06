@@ -2,6 +2,7 @@
   "expo": {
     "name": "Sportzfy",
     "slug": "sportzfy-mobile",
+    "owner": "jafor_1",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
@@ -63,6 +64,11 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ae63aeca-bab1-4e61-b6a3-b3cb7949e89b"
+      }
     }
   }
 }
