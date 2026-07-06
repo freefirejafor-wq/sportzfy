@@ -1,0 +1,79 @@
+name: 🏗️ Build Sportzfy APK
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'android/**'
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:   # মোবাইল থেকে manually চালাতে পারবে
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # ১. Code নামাও
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v4
+
+      # ২. Java 17 সেটআপ
+      - name: ☕ Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      # ৩. Gradle permission
+      - name: 🔑 Grant Gradle Permission
+        working-directory: android
+        run: chmod +x gradlew
+
+      # ৪. Dependencies ক্যাশ করো — পরেরবার দ্রুত হবে
+      - name: 📦 Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # ৫. Debug APK বানাও
+      - name: 🔨 Build Debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --stacktrace
+
+      # ৬. Release APK বানাও (signed নয়, কিন্তু ইনস্টল হবে)
+      - name: 📦 Build Release APK
+        working-directory: android
+        run: ./gradlew assembleRelease --stacktrace
+
+      # ৭. APK আপলোড করো — ডাউনলোড করতে পারবে
+      - name: ⬆️ Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sportzfy-Debug-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+      - name: ⬆️ Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sportzfy-Release-APK
+          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
+          retention-days: 30
+
+      # ৮. Build সফল হলে summary দেখাও
+      - name: ✅ Build Summary
+        run: |
+          echo "## 🎉 Sportzfy APK তৈরি হয়েছে!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Debug APK**: Actions → Artifacts → Sportzfy-Debug-APK" >> $GITHUB_STEP_SUMMARY
+          echo "- **Release APK**: Actions → Artifacts → Sportzfy-Release-APK" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "APK ডাউনলোড করে মোবাইলে ইনস্টল করুন ✅" >> $GITHUB_STEP_SUMMARY

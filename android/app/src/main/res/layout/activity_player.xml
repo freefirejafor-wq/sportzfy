@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <!-- ExoPlayer View -->
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true" />
+
+    <!-- Top Controls Bar -->
+    <LinearLayout
+        android:id="@+id/topControlsBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:background="@color/overlay_dark">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_media_previous"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="@color/white"
+            android:contentDescription="Back" />
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sportzfy"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:layout_marginStart="8dp" />
+
+        <!-- Quality Button -->
+        <Button
+            android:id="@+id/btnQuality"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="HD"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:backgroundTint="@color/accent"
+            android:paddingHorizontal="12dp"
+            android:layout_marginEnd="8dp" />
+
+        <!-- Lock Button -->
+        <ImageButton
+            android:id="@+id/btnLock"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_lock_lock"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="@color/white"
+            android:contentDescription="Lock" />
+
+    </LinearLayout>
+
+    <!-- Bottom Controls Bar -->
+    <LinearLayout
+        android:id="@+id/bottomControlsBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp"
+        android:background="@color/overlay_dark">
+
+        <!-- Floating Player Button -->
+        <ImageButton
+            android:id="@+id/btnFloating"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_view"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="@color/white"
+            android:contentDescription="Floating Player" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <!-- Fullscreen Button -->
+        <ImageButton
+            android:id="@+id/btnFullscreen"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_menu_zoom"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="@color/white"
+            android:contentDescription="Fullscreen" />
+
+    </LinearLayout>
+
+    <!-- Lock Overlay — সব control লুকিয়ে দেয় -->
+    <RelativeLayout
+        android:id="@+id/lockOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/btnUnlock"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_centerInParent="true"
+            android:src="@android:drawable/ic_lock_lock"
+            android:backgroundTint="@color/accent"
+            android:tint="@color/white"
+            android:contentDescription="Unlock" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

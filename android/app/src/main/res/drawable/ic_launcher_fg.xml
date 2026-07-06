@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- S অক্ষর — Sportzfy -->
+    <path
+        android:fillColor="#E94560"
+        android:pathData="M54,20 C36,20 22,30 22,44 C22,54 30,60 40,63 L56,67 C62,69 66,72 66,76 C66,82 60,86 52,86 C44,86 36,82 30,76 L22,84 C30,92 40,96 52,96 C70,96 82,86 82,74 C82,64 74,58 64,55 L48,51 C42,49 38,46 38,42 C38,36 44,32 54,32 C62,32 70,36 74,42 L82,34 C76,26 66,20 54,20 Z" />
+    <!-- Play triangle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M44,46 L44,62 L60,54 Z" />
+</vector>

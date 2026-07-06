@@ -1,0 +1,4 @@
+-keep class androidx.media3.** { *; }
+-keep class com.arthenica.ffmpegkit.** { *; }
+-dontwarn androidx.media3.**
+-dontwarn com.arthenica.**
