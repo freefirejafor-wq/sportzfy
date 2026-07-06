@@ -27,10 +27,13 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      # ৩. Gradle permission
+      # ৩. Gradle permission — দুইভাবে নিশ্চিত করছি
       - name: 🔑 Grant Gradle Permission
         working-directory: android
-        run: chmod +x gradlew
+        run: |
+          chmod +x gradlew
+          chmod +x ./gradlew
+          ls -la gradlew
 
       # ৪. Dependencies ক্যাশ করো — পরেরবার দ্রুত হবে
       - name: 📦 Cache Gradle
