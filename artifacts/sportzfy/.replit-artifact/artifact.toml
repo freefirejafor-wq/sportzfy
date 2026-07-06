@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Sportzfy"
+version = "1.0.0"
+id = "artifacts/sportzfy"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 5173
+
+[services.development]
+run = "pnpm --filter @workspace/sportzfy run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/sportzfy", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/sportzfy/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "5173"
+BASE_PATH = "/"

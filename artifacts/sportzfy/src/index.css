@@ -1,0 +1,298 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-border: hsl(var(--border));
+  --font-sans: 'Inter', sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+}
+
+:root {
+  --background: 220 20% 8%;
+  --foreground: 0 0% 95%;
+  --card: 220 18% 12%;
+  --card-foreground: 0 0% 95%;
+  --primary: 185 100% 45%;
+  --primary-foreground: 220 20% 8%;
+  --muted: 220 15% 18%;
+  --muted-foreground: 0 0% 60%;
+  --accent: 185 100% 45%;
+  --border: 185 80% 35%;
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * { @apply border-border box-border; }
+  body {
+    @apply font-sans antialiased;
+    background: hsl(220 20% 8%);
+    color: hsl(0 0% 95%);
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+  html { background: #0a0a0a; }
+}
+
+@layer utilities {
+  .teal { color: #00d4e8; }
+  .bg-card-dark {
+    background: hsl(220 18% 12%);
+    border: 1px solid hsl(185 80% 35%);
+    border-radius: 0.75rem;
+  }
+  .live-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #e53e3e;
+    display: inline-block;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  .sport-icon-bubble {
+    width: 54px; height: 54px;
+    border-radius: 12px;
+    background: hsl(220 18% 16%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    position: relative;
+    transition: border-color 0.2s;
+    flex-shrink: 0;
+  }
+  .sport-icon-bubble.active {
+    border-color: #00d4e8;
+  }
+  .sport-badge {
+    position: absolute; top: -5px; right: -5px;
+    background: #e53e3e;
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 1px 4px;
+    min-width: 16px;
+    text-align: center;
+    line-height: 14px;
+  }
+  .filter-pill {
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 1.5px solid #444;
+    font-size: 13px;
+    font-weight: 600;
+    color: #ccc;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    background: transparent;
+  }
+  .filter-pill.active {
+    border-color: #00d4e8;
+    color: #00d4e8;
+    background: rgba(0, 212, 232, 0.08);
+  }
+  .match-card {
+    background: hsl(220 18% 12%);
+    border: 1.5px solid hsl(185 80% 35%);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .match-card .league-row {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: #aaa; margin-bottom: 8px;
+  }
+  .match-card .hot-badge {
+    position: absolute; top: 0; right: 0;
+    background: #00d4e8;
+    color: #000;
+    font-size: 11px; font-weight: 800;
+    padding: 2px 10px;
+    border-radius: 0 12px 0 12px;
+  }
+  .team-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .team-info {
+    display: flex; align-items: center; gap: 8px;
+    flex: 1;
+  }
+  .team-flag {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #333;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .team-name { font-size: 14px; font-weight: 600; color: #eee; }
+  .live-center {
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    flex-shrink: 0;
+  }
+  .live-label {
+    font-size: 10px; font-weight: 700; color: #e53e3e;
+    display: flex; align-items: center; gap: 3px;
+  }
+  .match-timer {
+    font-size: 13px; font-weight: 700; color: #eee;
+    text-align: center;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+  .channel-card {
+    background: hsl(220 18% 12%);
+    border-radius: 12px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 14px 8px;
+    cursor: pointer;
+    transition: transform 0.15s;
+    border: 1.5px solid hsl(220 18% 20%);
+    min-height: 110px;
+    gap: 8px;
+  }
+  .channel-card:hover { transform: scale(0.97); }
+  .channel-card img {
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: white;
+  }
+  .channel-card .ch-name { font-size: 11px; color: #ccc; text-align: center; }
+  .category-row {
+    display: flex; align-items: center; gap: 12px;
+    background: hsl(220 18% 12%);
+    border: 1.5px solid hsl(185 80% 35%);
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    min-height: 60px;
+  }
+  .category-row:hover { background: hsl(220 18% 16%); }
+  .category-row img {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: white;
+    flex-shrink: 0;
+  }
+  .category-row .cat-name {
+    font-size: 13px; font-weight: 700; color: #eee;
+    flex: 1;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    background: hsl(220 20% 10%);
+    border-top: 1px solid hsl(220 18% 20%);
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 10px 0 16px;
+    z-index: 100;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    cursor: pointer; color: #777; transition: color 0.2s;
+    flex: 1;
+  }
+  .nav-item.active { color: #00d4e8; }
+  .nav-item span { font-size: 11px; font-weight: 600; }
+  .top-bar {
+    position: sticky; top: 0; z-index: 90;
+    background: hsl(220 20% 8%);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid hsl(220 18% 16%);
+  }
+  .top-bar-title {
+    font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 0.5px;
+  }
+  .top-bar-icons { display: flex; align-items: center; gap: 18px; }
+  .top-bar-icons svg { color: #ccc; cursor: pointer; }
+  .side-menu-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    z-index: 200;
+  }
+  .side-menu {
+    position: fixed; top: 0; left: 0;
+    transform: translateX(-100%);
+    width: 260px; height: 100vh;
+    background: hsl(220 20% 10%);
+    z-index: 201;
+    padding: 0;
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+  }
+  .side-menu.open {
+    transform: translateX(0);
+  }
+  .menu-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 20px; cursor: pointer;
+    transition: background 0.15s; color: #ccc;
+    font-size: 15px; font-weight: 500;
+  }
+  .menu-item:hover { background: hsl(220 18% 16%); color: #fff; }
+  .splash {
+    position: fixed; inset: 0;
+    background: hsl(220 20% 8%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 999;
+    gap: 20px;
+  }
+  .splash-logo-wrapper {
+    width: 120px; height: 120px;
+    border-radius: 24px;
+    background: hsl(215 50% 22%);
+    border: 3px solid #00d4e8;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 30px rgba(0,212,232,0.3);
+  }
+  .splash-title {
+    font-size: 28px; font-weight: 800; letter-spacing: 6px;
+    color: #00d4e8;
+  }
+  .splash-version {
+    position: absolute; bottom: 60px;
+    font-size: 14px; font-weight: 700; color: #00d4e8;
+  }
+  .splash-smile {
+    position: absolute; bottom: 90px;
+    font-size: 28px; color: #00d4e8;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .fade-in { animation: fadeIn 0.4s ease; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}
