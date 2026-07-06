@@ -8,21 +8,18 @@ on:
   workflow_dispatch:
     inputs:
       profile:
-        description: 'EAS build profile'
+        description: 'EAS build profile (APK only)'
         required: true
         default: 'preview'
         type: choice
         options:
           - preview
-          - production
+          - development
 
 jobs:
   build-android:
     name: 🤖 Android APK Build
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: artifacts/sportzfy-mobile
 
     steps:
       - name: 📦 Checkout repository
@@ -39,37 +36,41 @@ jobs:
           version: 9
 
       - name: 📥 Install dependencies
-        run: |
-          cd ../..
-          pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
-      - name: 🔧 Setup EAS
+      - name: 🔧 Setup EAS CLI
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 🏗️ Build APK with EAS
+      - name: 🏗️ Build APK with EAS (waits for cloud build)
+        working-directory: artifacts/sportzfy-mobile
         run: |
+          mkdir -p build
           eas build \
             --platform android \
             --profile ${{ github.event.inputs.profile || 'preview' }} \
             --non-interactive \
+            --wait \
             --output ./build/sportzfy.apk
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: 📤 Upload APK artifact
+      - name: 📤 Upload APK as GitHub artifact
         uses: actions/upload-artifact@v4
         with:
           name: sportzfy-apk
           path: artifacts/sportzfy-mobile/build/sportzfy.apk
+          if-no-files-found: error
           retention-days: 30
 
       - name: 🎉 Build Summary
         run: |
           echo "## ✅ Sportzfy APK Build Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Profile:** ${{ github.event.inputs.profile || 'preview' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Platform:** Android" >> $GITHUB_STEP_SUMMARY
+          echo "- **Platform:** Android APK" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "Download the APK from the **Artifacts** section above ⬆️" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⬆️ Download the APK from the **Artifacts** section above" >> $GITHUB_STEP_SUMMARY
