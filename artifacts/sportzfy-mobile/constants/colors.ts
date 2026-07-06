@@ -1,59 +1,31 @@
-/**
- * Semantic design tokens for the mobile app.
- *
- * These tokens mirror the naming conventions used in web artifacts (index.css)
- * so that multi-artifact projects share a cohesive visual identity.
- *
- * Replace the placeholder values below with values that match the project's
- * brand. If a sibling web artifact exists, read its index.css and convert the
- * HSL values to hex so both artifacts use the same palette.
- *
- * To add dark mode, add a `dark` key with the same token names.
- * The useColors() hook will automatically pick it up.
- */
-
-const colors = {
-  light: {
-    // Legacy aliases (kept for backward compatibility)
-    text: '#0a0a0a',
-    tint: '#2f95dc',
-
-    // Core surfaces
-    background: '#ffffff',
-    foreground: '#0a0a0a',
-
-    // Cards / elevated surfaces
-    card: '#f9f9f9',
-    cardForeground: '#0a0a0a',
-
-    // Primary action color (buttons, links, active states)
-    primary: '#2f95dc',
-    primaryForeground: '#ffffff',
-
-    // Secondary / less-emphasis interactive surfaces
-    secondary: '#f0f0f0',
-    secondaryForeground: '#1a1a1a',
-
-    // Muted / subdued elements (dividers, timestamps, placeholders)
-    muted: '#f0f0f0',
-    mutedForeground: '#737373',
-
-    // Accent highlights (badges, selected items, focus rings)
-    accent: '#f0f0f0',
-    accentForeground: '#1a1a1a',
-
-    // Destructive actions (delete, error states)
-    destructive: '#ef4444',
-    destructiveForeground: '#ffffff',
-
-    // Borders and input outlines
-    border: '#e5e5e5',
-    input: '#e5e5e5',
-  },
-
-  // Border radius (in px). Sync from the sibling web artifact's --radius
-  // CSS variable. This value applies to cards, buttons, inputs, and modals.
-  radius: 8,
+export const Colors = {
+  bg: '#0a0e1a',
+  card: '#131929',
+  cardBorder: '#1e2d45',
+  cardHover: '#1a2438',
+  accent: '#00d4e8',
+  accentDim: '#0099aa',
+  accentGlow: 'rgba(0,212,232,0.15)',
+  text: '#ffffff',
+  textMuted: '#8899aa',
+  textDim: '#556677',
+  live: '#ff3b3b',
+  liveGlow: 'rgba(255,59,59,0.2)',
+  upcoming: '#f5a623',
+  upcomingGlow: 'rgba(245,166,35,0.2)',
+  finished: '#4a90d9',
+  finishedGlow: 'rgba(74,144,217,0.2)',
+  success: '#00d084',
+  overlay: 'rgba(0,0,0,0.85)',
+  overlayLight: 'rgba(0,0,0,0.5)',
+  surface: '#0f1625',
+  surfaceLight: '#162030',
+  border: '#1e2d45',
+  borderLight: '#263650',
+  playerBg: '#000000',
+  qualityFHD: '#00d4e8',
+  qualityHD: '#4ade80',
+  qualitySD: '#f59e0b',
 };
 
-export default colors;
+export type ColorKey = keyof typeof Colors;

@@ -1,0 +1,75 @@
+name: 🏗️ Build Sportzfy APK (EAS)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'artifacts/sportzfy-mobile/**'
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'EAS build profile'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - production
+
+jobs:
+  build-android:
+    name: 🤖 Android APK Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: artifacts/sportzfy-mobile
+
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: 📥 Install dependencies
+        run: |
+          cd ../..
+          pnpm install --frozen-lockfile
+
+      - name: 🔧 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🏗️ Build APK with EAS
+        run: |
+          eas build \
+            --platform android \
+            --profile ${{ github.event.inputs.profile || 'preview' }} \
+            --non-interactive \
+            --output ./build/sportzfy.apk
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📤 Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sportzfy-apk
+          path: artifacts/sportzfy-mobile/build/sportzfy.apk
+          retention-days: 30
+
+      - name: 🎉 Build Summary
+        run: |
+          echo "## ✅ Sportzfy APK Build Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "- **Profile:** ${{ github.event.inputs.profile || 'preview' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Platform:** Android" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "Download the APK from the **Artifacts** section above ⬆️" >> $GITHUB_STEP_SUMMARY
