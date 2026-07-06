@@ -8,7 +8,7 @@
     "icon": "./assets/images/sportzfy-icon.png",
     "scheme": "sportzfy",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/sportzfy-icon.png",
       "resizeMode": "contain",
