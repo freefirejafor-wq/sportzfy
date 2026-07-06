@@ -1,0 +1,23 @@
+kind = "mobile"
+previewPath = "/sportzfy-mobile/"
+title = "Sportzfy Mobile"
+version = "1.0.0"
+id = "artifacts/sportzfy-mobile"
+router = "expo-domain"
+
+[[services]]
+name = "expo"
+ensurePreviewReachable = "/status"
+paths = [ "/sportzfy-mobile/" ]
+localPort = 23071
+
+[services.development]
+run = "pnpm --filter @workspace/sportzfy-mobile run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/sportzfy-mobile", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/sportzfy-mobile", "run", "serve" ]
+
+[services.env]
+PORT = "23071"
+BASE_PATH = "/sportzfy-mobile/"
