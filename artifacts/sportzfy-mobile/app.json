@@ -5,12 +5,12 @@
     "owner": "jafor_1",
     "version": "1.0.0",
     "orientation": "default",
-    "icon": "./assets/images/icon_2.png",
+    "icon": "./assets/images/sportzfy-icon.png",
     "scheme": "sportzfy",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
-      "image": "./assets/images/icon_2.png",
+      "image": "./assets/images/sportzfy-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#0a0e1a"
     },
@@ -27,7 +27,7 @@
       "package": "com.sportzfy.app",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon_2.png",
+        "foregroundImage": "./assets/images/sportzfy-icon.png",
         "backgroundColor": "#0a0e1a"
       },
       "permissions": [
@@ -36,7 +36,7 @@
       ]
     },
     "web": {
-      "favicon": "./assets/images/icon_2.png"
+      "favicon": "./assets/images/sportzfy-icon.png"
     },
     "plugins": [
       [
@@ -62,8 +62,7 @@
       ]
     ],
     "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+      "typedRoutes": true
     },
     "extra": {
       "eas": {
