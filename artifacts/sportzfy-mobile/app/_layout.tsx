@@ -1,12 +1,22 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { PlayerProvider } from '../context/PlayerContext';
 import FloatingPlayer from '../components/FloatingPlayer';
 import { Colors } from '../constants/colors';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+
+// Keep native splash visible until we explicitly hide it
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  useEffect(() => {
+    // Hide the native splash screen once the root layout has mounted
+    SplashScreen.hideAsync();
+  }, []);
+
   return (
     <GestureHandlerRootView style={styles.root}>
       <PlayerProvider>
