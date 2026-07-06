@@ -63,36 +63,29 @@ jobs:
         run: |
           mkdir -p build
 
-          # Get the latest finished build's download URL
-          BUILD_JSON=$(eas build:list \
+          # Use jq to parse EAS build list JSON (jq is pre-installed on ubuntu-latest)
+          BUILD_URL=$(eas build:list \
             --platform android \
             --status finished \
             --limit 1 \
             --non-interactive \
-            --json 2>/dev/null || echo "[]")
-
-          BUILD_URL=$(node -e "
-            const data = \`$BUILD_JSON\`;
-            try {
-              const builds = JSON.parse(data);
-              const url = (builds[0] || {})?.artifacts?.buildUrl || '';
-              console.log(url);
-            } catch(e) { console.log(''); }
-          ")
+            --json 2>/dev/null | jq -r '.[0].artifacts.buildUrl // empty')
 
           echo "APK URL: $BUILD_URL"
 
-          if [ -n "$BUILD_URL" ]; then
-            curl -L "$BUILD_URL" -o ./build/sportzfy.apk
-            echo "✅ APK downloaded: $(du -sh ./build/sportzfy.apk)"
+          if [ -n "$BUILD_URL" ] && [ "$BUILD_URL" != "null" ]; then
+            curl -fL "$BUILD_URL" -o ./build/sportzfy.apk
+            echo "✅ APK size: $(du -sh ./build/sportzfy.apk)"
           else
-            # Fallback: grep URL from build log
-            FALLBACK_URL=$(grep -oP 'https://expo\.dev/artifacts/eas/[^\s"]+' /tmp/eas-build.log | head -1)
-            if [ -n "$FALLBACK_URL" ]; then
-              curl -L "$FALLBACK_URL" -o ./build/sportzfy.apk
-              echo "✅ APK downloaded via fallback URL"
+            # Fallback: grep URL from EAS build log
+            FALLBACK=$(grep -oE 'https://expo\.dev/artifacts/eas/[^ ]+' /tmp/eas-build.log | head -1)
+            if [ -n "$FALLBACK" ]; then
+              curl -fL "$FALLBACK" -o ./build/sportzfy.apk
+              echo "✅ APK downloaded via log URL"
             else
-              echo "❌ Could not find APK URL. Check expo.dev manually."
+              echo "Build log:"
+              cat /tmp/eas-build.log | tail -30
+              echo "❌ No APK URL found — check expo.dev"
               exit 1
             fi
           fi
