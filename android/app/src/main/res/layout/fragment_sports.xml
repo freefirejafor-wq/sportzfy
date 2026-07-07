@@ -5,59 +5,44 @@
     android:orientation="vertical"
     android:background="@color/bg_primary">
 
-    <!-- Header -->
-    <TextView
+    <!-- Section title -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="📡 Sports Channels"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_primary"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp"/>
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
-    <!-- Search bar -->
-    <EditText
-        android:id="@+id/etSearch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginBottom="8dp"
-        android:padding="10dp"
-        android:background="@drawable/bg_search"
-        android:hint="🔍  Search channels..."
-        android:textColor="@color/text_primary"
-        android:textColorHint="@color/text_muted"
-        android:textSize="13sp"
-        android:inputType="text"
-        android:imeOptions="actionSearch"
-        android:singleLine="true"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="📡  Live Sports Channels"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"/>
 
-    <!-- Category chips -->
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none"
-        android:paddingHorizontal="12dp"
-        android:paddingBottom="8dp">
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupCategories"
+        <TextView
+            android:id="@+id/tvChannelCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:singleSelection="true"
-            xmlns:app="http://schemas.android.com/apk/res-auto"/>
-    </HorizontalScrollView>
+            android:textSize="12sp"
+            android:textColor="@color/accent"/>
+    </LinearLayout>
 
-    <!-- Channel grid -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border"
+        android:layout_marginBottom="8dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerChannels"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingHorizontal="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:paddingBottom="80dp"
         android:clipToPadding="false"/>
-
 </LinearLayout>
