@@ -13,23 +13,38 @@
         android:layout_height="56dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:background="@color/bg_surface">
+        android:paddingHorizontal="16dp"
+        android:background="@color/bg_primary"
+        android:elevation="4dp">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="⚡ Sportzfy"
-            android:textSize="20sp"
+            android:text="Sportzfy"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="@color/accent"/>
+            android:textColor="@color/text_primary"
+            android:fontFamily="sans-serif-black"/>
+
+        <View
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:background="@drawable/bg_live_dot"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" LIVE"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="@color/live_red"
+            android:letterSpacing="0.05"/>
     </LinearLayout>
 
     <!-- Fragment container -->
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_container"
+        android:id="@+id/navHostFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
@@ -39,10 +54,10 @@
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg_surface"
-        app:menu="@menu/bottom_nav_menu"
+        android:background="@color/surface"
         app:itemIconTint="@color/bottom_nav_color"
         app:itemTextColor="@color/bottom_nav_color"
+        app:menu="@menu/bottom_nav_menu"
         app:labelVisibilityMode="labeled"/>
 
 </LinearLayout>

@@ -11,24 +11,31 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.chip.Chip
 import com.sportzfy.app.PlayerActivity
 import com.sportzfy.app.R
 import com.sportzfy.app.data.ALL_STREAMS
+import com.sportzfy.app.data.Quality
+import com.sportzfy.app.data.STREAM_CATEGORIES
 import com.sportzfy.app.data.Stream
+import com.sportzfy.app.data.getStreamsByCategory
 import com.sportzfy.app.databinding.BottomSheetStreamPickerBinding
-import com.sportzfy.app.databinding.ItemStreamBinding
 
 class StreamPickerBottomSheet : BottomSheetDialogFragment() {
 
     private var _binding: BottomSheetStreamPickerBinding? = null
     private val binding get() = _binding!!
+    private lateinit var streamAdapter: StreamAdapter
+    private var matchTitle: String = ""
 
     companion object {
-        private const val ARG_TITLE = "title"
-        fun newInstance(title: String) = StreamPickerBottomSheet().apply {
-            arguments = Bundle().apply { putString(ARG_TITLE, title) }
+        private const val ARG_TITLE = "match_title"
+        fun newInstance(matchTitle: String) = StreamPickerBottomSheet().apply {
+            arguments = Bundle().also { it.putString(ARG_TITLE, matchTitle) }
         }
     }
+
+    override fun getTheme() = R.style.BottomSheetTheme
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = BottomSheetStreamPickerBinding.inflate(inflater, container, false)
@@ -37,67 +44,81 @@ class StreamPickerBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        matchTitle = arguments?.getString(ARG_TITLE) ?: "Watch Now"
+        binding.tvMatchTitle.text = matchTitle
 
-        binding.textMatchTitle.text = arguments?.getString(ARG_TITLE) ?: "Select Stream"
-
-        val adapter = StreamAdapter { stream ->
+        // Stream list
+        streamAdapter = StreamAdapter { stream ->
             dismiss()
             val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
-                putExtra(PlayerActivity.EXTRA_URL,   stream.url)
-                putExtra(PlayerActivity.EXTRA_TITLE, stream.name)
+                putExtra(PlayerActivity.EXTRA_STREAM_URL, stream.url)
+                putExtra(PlayerActivity.EXTRA_STREAM_NAME, stream.name)
+                putExtra(PlayerActivity.EXTRA_MATCH_TITLE, matchTitle)
             }
-            startActivity(intent)
+            requireContext().startActivity(intent)
+        }
+        binding.recyclerStreams.layoutManager = LinearLayoutManager(context)
+        binding.recyclerStreams.adapter = streamAdapter
+        streamAdapter.submitList(ALL_STREAMS)
+
+        // Category chips
+        STREAM_CATEGORIES.forEach { cat ->
+            val chip = Chip(requireContext()).apply {
+                text = cat
+                isCheckable = true
+                setChipBackgroundColorResource(R.color.chip_selector)
+                setTextColor(resources.getColorStateList(R.color.chip_text_selector, null))
+                chipStrokeWidth = 1f
+                setChipStrokeColorResource(R.color.accent)
+            }
+            chip.setOnClickListener {
+                streamAdapter.submitList(getStreamsByCategory(cat))
+            }
+            binding.chipGroupCategories.addView(chip)
         }
 
-        binding.recyclerStreams.apply {
-            layoutManager = LinearLayoutManager(context)
-            this.adapter  = adapter
-        }
-
-        adapter.submitList(ALL_STREAMS)
-
-        binding.btnClose.setOnClickListener { dismiss() }
+        binding.btnCancel.setOnClickListener { dismiss() }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-}
 
-// ── Stream list adapter ──────────────────────────────────────────────────────
+    // ── Stream list adapter ───────────────────────────────────────────
+    inner class StreamAdapter(
+        private val onClick: (Stream) -> Unit
+    ) : ListAdapter<Stream, StreamAdapter.VH>(DIFF) {
 
-class StreamAdapter(
-    private val onClick: (Stream) -> Unit
-) : ListAdapter<Stream, StreamAdapter.VH>(DIFF) {
-
-    inner class VH(val binding: ItemStreamBinding) : RecyclerView.ViewHolder(binding.root)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = VH(
-        ItemStreamBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-    )
-
-    override fun onBindViewHolder(holder: VH, position: Int) {
-        val stream = getItem(position)
-        with(holder.binding) {
-            textStreamName.text = stream.name
-            textQuality.text    = stream.quality
-
-            val (bgColor, textColor) = when (stream.quality) {
-                "FHD" -> Pair(0xFF003344.toInt(), 0xFF00D4E8.toInt())
-                "HD"  -> Pair(0xFF003300.toInt(), 0xFF44DD44.toInt())
-                else  -> Pair(0xFF332200.toInt(), 0xFFFFAA00.toInt())
-            }
-            textQuality.setBackgroundColor(bgColor)
-            textQuality.setTextColor(textColor)
-
-            root.setOnClickListener { onClick(stream) }
+        inner class VH(view: View) : RecyclerView.ViewHolder(view) {
+            val tvName: TextView = view.findViewById(R.id.tvStreamName)
+            val tvQuality: TextView = view.findViewById(R.id.tvQuality)
         }
-    }
 
-    companion object {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+            val v = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_stream, parent, false)
+            return VH(v)
+        }
+
+        override fun onBindViewHolder(holder: VH, position: Int) {
+            val stream = getItem(position)
+            holder.tvName.text = stream.name
+            holder.tvQuality.text = stream.quality.name
+            holder.tvQuality.setTextColor(
+                holder.itemView.context.getColor(
+                    when (stream.quality) {
+                        Quality.FHD -> R.color.quality_fhd
+                        Quality.HD  -> R.color.quality_hd
+                        Quality.SD  -> R.color.quality_sd
+                    }
+                )
+            )
+            holder.itemView.setOnClickListener { onClick(stream) }
+        }
+
         val DIFF = object : DiffUtil.ItemCallback<Stream>() {
-            override fun areItemsTheSame(a: Stream, b: Stream) = a.url == b.url
+            override fun areItemsTheSame(a: Stream, b: Stream) = a.id == b.id
             override fun areContentsTheSame(a: Stream, b: Stream) = a == b
         }
     }

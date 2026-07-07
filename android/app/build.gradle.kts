@@ -59,6 +59,10 @@ dependencies {
     implementation("androidx.media3:media3-ui:1.2.1")
     implementation("androidx.media3:media3-session:1.2.1")
 
-    // Glide (image loading for channel logos)
+    // SwipeRefreshLayout + CoordinatorLayout
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+
+    // Glide (image loading for logos)
     implementation("com.github.bumptech.glide:glide:4.16.0")
 }

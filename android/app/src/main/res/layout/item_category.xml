@@ -12,24 +12,23 @@
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_marginBottom="6dp"
-        app:cardBackgroundColor="@color/card_bg"
-        app:cardCornerRadius="12dp"
+        app:cardBackgroundColor="@color/surface"
+        app:cardCornerRadius="16dp"
         app:cardElevation="0dp"
         app:strokeColor="@color/card_border"
         app:strokeWidth="1dp">
 
-        <ImageView
-            android:id="@+id/imgChannel"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
+        <TextView
+            android:id="@+id/tvCategoryEmoji"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_channel_placeholder"
-            android:padding="4dp"/>
+            android:textSize="32sp"
+            android:text="⚽"/>
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/tvChannelName"
+        android:id="@+id/tvCategoryName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="10sp"

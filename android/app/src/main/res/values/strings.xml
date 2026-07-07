@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sportzfy</string>
-    <string name="channel_name">Sportzfy Player</string>
-    <string name="channel_desc">Sports streaming playback</string>
-    <string name="floating_player">Floating Player</string>
-    <string name="lock_controls">Lock Controls</string>
-    <string name="unlock_controls">Unlock Controls</string>
-    <string name="select_quality">Select Quality</string>
-    <string name="fullscreen">Fullscreen</string>
-    <string name="nav_live">Live Events</string>
+    <string name="nav_live">Live</string>
     <string name="nav_sports">Sports</string>
     <string name="nav_categories">Categories</string>
 </resources>

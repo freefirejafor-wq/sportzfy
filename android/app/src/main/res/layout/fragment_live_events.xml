@@ -1,132 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/bg_primary">
 
-    <!-- Search bar -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="12dp">
-
-        <EditText
-            android:id="@+id/searchBar"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:background="@drawable/bg_search"
-            android:paddingStart="44dp"
-            android:paddingEnd="12dp"
-            android:hint="Search matches..."
-            android:textColorHint="@color/text_hint"
-            android:textColor="@color/text_primary"
-            android:textSize="14sp"
-            android:inputType="text"
-            android:imeOptions="actionSearch"
-            android:singleLine="true"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="14dp"
-            android:text="🔍"
-            android:textSize="18sp"/>
-    </FrameLayout>
-
-    <!-- Filter chips -->
+    <!-- Top bar -->
     <LinearLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="10dp"
-        android:gravity="center_vertical">
+        android:orientation="vertical"
+        android:background="@color/bg_primary"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/chipLive"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:gravity="center"
-            android:text="🔴 LIVE"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="@color/accent"
-            android:background="@drawable/bg_chip_active"
-            android:clickable="true"
-            android:focusable="true"/>
+        <!-- Search bar -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="14dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_search">
 
-        <TextView
-            android:id="@+id/chipUpcoming"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginStart="8dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:gravity="center"
-            android:text="⏰ Upcoming"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_secondary"
-            android:background="@drawable/bg_chip_inactive"
-            android:clickable="true"
-            android:focusable="true"/>
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Search matches…"
+                android:hintTextColor="@color/text_dim"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:paddingHorizontal="16dp"
+                android:background="@null"
+                android:inputType="text"
+                android:imeOptions="actionSearch"
+                android:singleLine="true"/>
+        </FrameLayout>
 
+        <!-- Filter chips -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:scrollbars="none"
+            android:paddingHorizontal="14dp"
+            android:layout_marginBottom="8dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/chipAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:text="All"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_chip_selector"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/chipLive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:text="🔴 Live"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_chip_selector"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/chipUpcoming"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:text="📅 Upcoming"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_chip_selector"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:id="@+id/chipFinished"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:text="✅ Finished"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_chip_selector"/>
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- Last updated -->
         <TextView
-            android:id="@+id/chipFinished"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginStart="8dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:gravity="center"
-            android:text="✅ Finished"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_secondary"
-            android:background="@drawable/bg_chip_inactive"
-            android:clickable="true"
-            android:focusable="true"/>
+            android:id="@+id/tvLastUpdated"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="10sp"
+            android:textColor="@color/text_dim"
+            android:paddingHorizontal="14dp"
+            android:paddingBottom="6dp"/>
+
     </LinearLayout>
 
-    <!-- Match list -->
-    <FrameLayout
+    <!-- Main content -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginTop="142dp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerMatches"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingBottom="8dp"/>
+            android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/emptyView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:visibility="gone">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📭"
-                android:textSize="48sp"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="No matches found"
-                android:textColor="@color/text_secondary"
-                android:textSize="16sp"/>
-        </LinearLayout>
-    </FrameLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerMatches"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="8dp"
+                android:paddingBottom="80dp"
+                android:clipToPadding="false"/>
 
-</LinearLayout>
+            <!-- Error banner -->
+            <TextView
+                android:id="@+id/tvError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="⚠ Connection error"
+                android:textColor="@color/upcoming_orange"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:padding="12dp"
+                android:background="@color/surface"
+                android:visibility="gone"/>
+
+            <!-- Empty state -->
+            <LinearLayout
+                android:id="@+id/tvEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🏟"
+                    android:textSize="48sp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No matches found"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_muted"
+                    android:layout_marginTop="12dp"/>
+            </LinearLayout>
+
+        </FrameLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

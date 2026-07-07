@@ -6,32 +6,37 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.sportzfy.app.data.Channel
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.sportzfy.app.R
 import com.sportzfy.app.databinding.ItemChannelBinding
 
 class ChannelAdapter(
     private val onClick: (Channel) -> Unit
 ) : ListAdapter<Channel, ChannelAdapter.VH>(DIFF) {
 
-    inner class VH(val binding: ItemChannelBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class VH(val b: ItemChannelBinding) : RecyclerView.ViewHolder(b.root)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = VH(
-        ItemChannelBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-    )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+        return VH(ItemChannelBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+    }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val channel = getItem(position)
-        with(holder.binding) {
-            textChannelName.text = channel.name
+        val ch = getItem(position)
+        holder.b.tvChannelName.text = ch.name
 
-            Glide.with(root.context)
-                .load(channel.logo)
-                .placeholder(com.sportzfy.app.R.drawable.ic_channel_placeholder)
-                .error(com.sportzfy.app.R.drawable.ic_channel_placeholder)
-                .into(imageChannelLogo)
-
-            root.setOnClickListener { onClick(channel) }
+        if (ch.logoUrl.isNotEmpty()) {
+            Glide.with(holder.b.imgChannel)
+                .load(ch.logoUrl)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .placeholder(R.drawable.ic_channel_placeholder)
+                .error(R.drawable.ic_channel_placeholder)
+                .centerInside()
+                .into(holder.b.imgChannel)
+        } else {
+            holder.b.imgChannel.setImageResource(R.drawable.ic_channel_placeholder)
         }
+
+        holder.b.root.setOnClickListener { onClick(ch) }
     }
 
     companion object {

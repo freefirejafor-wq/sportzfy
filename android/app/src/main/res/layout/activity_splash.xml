@@ -1,29 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_primary">
 
-    <!-- Logo container -->
     <LinearLayout
-        android:id="@+id/logoContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:orientation="vertical"
-        android:gravity="center"
-        android:alpha="0"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/versionText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:gravity="center">
 
         <!-- S logo circle -->
         <FrameLayout
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:background="@drawable/bg_splash_logo">
+            android:background="@drawable/bg_splash_logo"
+            android:layout_marginBottom="24dp">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -35,37 +29,32 @@
                 android:fontFamily="sans-serif-black"/>
         </FrameLayout>
 
+        <!-- App name -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:text="Sportzfy"
             android:textSize="32sp"
             android:textStyle="bold"
             android:textColor="@color/text_primary"
-            android:letterSpacing="0.05"/>
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.04"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Live Sports Streaming"
-            android:textSize="14sp"
-            android:textColor="@color/text_secondary"/>
+            android:text="v6.0"
+            android:textSize="12sp"
+            android:textColor="@color/text_dim"
+            android:layout_marginTop="8dp"/>
     </LinearLayout>
 
-    <!-- Version text -->
-    <TextView
-        android:id="@+id/versionText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Version 6.0"
-        android:textSize="12sp"
-        android:textColor="@color/text_hint"
-        android:alpha="0"
-        android:layout_marginBottom="40dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+    <!-- Loading indicator -->
+    <ProgressBar
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="60dp"
+        android:indeterminateTint="@color/accent"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

@@ -1,32 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="accent">#00D4E8</color>
-    <color name="accent_dark">#0099AA</color>
-    <color name="live_red">#E53E3E</color>
-    <color name="live_red_bg">#2A0F0F</color>
-    <color name="upcoming_blue">#00D4E8</color>
-    <color name="upcoming_bg">#0A1F22</color>
-    <color name="finished_gray">#888888</color>
-    <color name="hot_orange">#FF6600</color>
+    <!-- Background -->
+    <color name="bg_primary">#0a0e1a</color>
+    <color name="card_bg">#131929</color>
+    <color name="card_border">#1e2d45</color>
+    <color name="card_hover">#1a2438</color>
+    <color name="surface">#0f1625</color>
+    <color name="surface_light">#162030</color>
 
-    <color name="bg_primary">#0B0F1A</color>
-    <color name="bg_surface">#111827</color>
-    <color name="bg_card">#131929</color>
-    <color name="bg_card2">#1A2035</color>
-    <color name="divider">#1E2A3A</color>
+    <!-- Accent -->
+    <color name="accent">#00d4e8</color>
+    <color name="accent_dim">#0099aa</color>
+    <color name="accent_glow">#260099aa</color>
 
-    <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#8899AA</color>
-    <color name="text_hint">#556070</color>
+    <!-- Text -->
+    <color name="text_primary">#ffffff</color>
+    <color name="text_muted">#8899aa</color>
+    <color name="text_dim">#556677</color>
 
-    <color name="chip_inactive">#556070</color>
-    <color name="bottom_nav_active">#00D4E8</color>
-    <color name="bottom_nav_inactive">#4A5568</color>
+    <!-- Status -->
+    <color name="live_red">#ff3b3b</color>
+    <color name="live_glow">#33ff3b3b</color>
+    <color name="upcoming_orange">#f5a623</color>
+    <color name="upcoming_glow">#33f5a623</color>
+    <color name="finished_blue">#4a90d9</color>
+    <color name="finished_glow">#334a90d9</color>
+    <color name="success">#00d084</color>
 
-    <color name="quality_fhd_bg">#0D2233</color>
-    <color name="quality_fhd_text">#00D4E8</color>
-    <color name="quality_hd_bg">#0D2200</color>
-    <color name="quality_hd_text">#44DD44</color>
-    <color name="quality_sd_bg">#2D1900</color>
-    <color name="quality_sd_text">#FFAA00</color>
+    <!-- Overlays -->
+    <color name="overlay">#D9000000</color>
+    <color name="overlay_light">#80000000</color>
+    <color name="player_bg">#000000</color>
+
+    <!-- Quality badges -->
+    <color name="quality_fhd">#00d4e8</color>
+    <color name="quality_hd">#4ade80</color>
+    <color name="quality_sd">#f59e0b</color>
+
+    <!-- Border -->
+    <color name="border">#1e2d45</color>
+    <color name="border_light">#263650</color>
 </resources>
