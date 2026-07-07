@@ -7,7 +7,10 @@ data class Stream(
     val name: String,
     val quality: Quality,
     val url: String,
-    val category: String
+    val category: String,
+    val drmKid: String? = null,
+    val drmKey: String? = null,
+    val format: String = "hls"   // "hls" or "dash"
 )
 
 // Verified active streams — July 2026 (from original Sportzfy project)
@@ -31,6 +34,58 @@ val ALL_STREAMS: List<Stream> = listOf(
     Stream("win-sports-wc",        "Win Sports WC",            Quality.HD,  "https://1nyaler.streamhostingcdn.top/stream/32/index.m3u8",                                                                                                    "FIFA"),
     Stream("2tv-sports-wc",        "2TV Sports WC",            Quality.HD,  "https://tv.cdn.xsg.ge/gpb-2tv/index.m3u8",                                                                                                                    "FIFA"),
 
+    // ── NongorPlay — FIFA World Cup 2026 Servers (DASH + ClearKey DRM) ──
+    // DRM KID : 14eeabf30c14b7fbf3008c03099ce011
+    // DRM Key : 17d2ac8dbc5429bd70af3433aa12158d
+    Stream("ng-tsn-4k",        "TSN 1 4k",        Quality.FHD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-evrenesoglu57", "evrenesoglu57",    Quality.FHD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-soco",          "SOCO",             Quality.HD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-cctv5",         "CCTV5 (Backup)",   Quality.HD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-beineng",       "BEINENG",          Quality.HD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-beinsports",    "Bein Sports",      Quality.HD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-irib-4k",       "IRIB_4K",          Quality.FHD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-bein-s2",       "Bein_S2",          Quality.HD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-fussball",      "FussBall",         Quality.HD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-bin-arabic",    "BIN_ARABIC",       Quality.HD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-tvp",           "TVP",              Quality.HD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-fox-4k",        "Fox Sports 4k",    Quality.FHD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-ctv-4k",        "CTV 4k",           Quality.FHD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-bein3",         "BEIN3",            Quality.HD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-telemundu",     "Telemundu",        Quality.HD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+    Stream("ng-dsports-4k",    "D Sports 4k",      Quality.FHD,
+        "https://otte.cache.aiv-cdn.net/bom-nitro/live/dash/enc/w0rehjjrwe/out/v1/69a2a7041395406b970598f61680e7cf/cenc.mpd",
+        "NongorPlay", "14eeabf30c14b7fbf3008c03099ce011", "17d2ac8dbc5429bd70af3433aa12158d", "dash"),
+
     // ── beIN Sports ──────────────────────────────────────────────────
     Stream("bein-1-uhd",           "beIN Sports 1 UHD",        Quality.FHD, "http://proxpanel.cc/h1wqD6CY/byxHYgX/707929",                                                                                                                 "beIN"),
     Stream("bein-1-amagi",         "beIN Sports 1 (Amagi)",    Quality.FHD, "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg02873-kravemedia-mtrspt1-distrotv/playlist.m3u8",                                                                "beIN"),
@@ -48,7 +103,7 @@ val ALL_STREAMS: List<Stream> = listOf(
     Stream("cricket-gold",         "Cricket Gold",             Quality.HD,  "https://streams2.sofast.tv/ptnr-yupptv/title-cricketgold/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/b2048bb8-1686-4432-aa50-647245383e0c/bfc6a36e-c250-4afe-b6c9-2bc57855bb7d/4.m3u8", "Cricket")
 )
 
-val STREAM_CATEGORIES = listOf("All", "FIFA", "beIN", "Sports", "Cricket")
+val STREAM_CATEGORIES = listOf("All", "FIFA", "NongorPlay", "beIN", "Sports", "Cricket")
 
 fun getStreamsByCategory(category: String): List<Stream> =
     if (category == "All") ALL_STREAMS else ALL_STREAMS.filter { it.category == category }
