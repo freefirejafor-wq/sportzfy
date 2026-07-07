@@ -25,7 +25,39 @@
         android:textColor="@color/text_primary"
         android:paddingHorizontal="16dp"
         android:paddingBottom="12dp"
-        android:text="Select Stream"/>
+        android:text="স্ট্রিম বেছে নিন"/>
+
+    <!-- ── Custom URL button ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:marginHorizontal="16dp"
+        android:paddingHorizontal="16dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_btn_watch"
+        android:id="@+id/btnAddCustomUrl"
+        android:clickable="true"
+        android:focusable="true">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🔗  Custom M3U8 / URL যোগ করুন"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="＋"
+            android:textSize="22sp"
+            android:textColor="@color/accent"/>
+    </LinearLayout>
 
     <!-- Category chip group -->
     <com.google.android.material.chip.ChipGroup
@@ -39,7 +71,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerStreams"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
+        android:layout_height="340dp"
         android:paddingHorizontal="16dp"
         android:clipToPadding="false"/>
 
@@ -51,7 +83,7 @@
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="16dp"
         android:background="@drawable/bg_stream_item"
-        android:text="Cancel"
+        android:text="বাতিল"
         android:textColor="@color/text_muted"
         android:textStyle="bold"
         android:stateListAnimator="@null"/>
