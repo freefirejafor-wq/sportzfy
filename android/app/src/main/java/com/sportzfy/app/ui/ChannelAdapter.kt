@@ -1,6 +1,7 @@
 package com.sportzfy.app.ui
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -16,27 +17,35 @@ class ChannelAdapter(
 
     inner class VH(val b: ItemChannelBinding) : RecyclerView.ViewHolder(b.root)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        return VH(ItemChannelBinding.inflate(LayoutInflater.from(parent.context), parent, false))
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH =
+        VH(ItemChannelBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val ch = getItem(position)
-        holder.b.tvChannelName.text = ch.name
+        val ch = holder.b
+        val channel = getItem(position)
 
-        if (ch.logoUrl.isNotEmpty()) {
-            Glide.with(holder.b.imgChannel)
-                .load(ch.logoUrl)
+        ch.tvChannelName.text = channel.name
+
+        // 🔴 LIVE badge — show for NongorPlay DASH streams
+        if (ch.root.findViewById<View?>(R.id.tvLiveBadge) != null) {
+            ch.root.findViewById<android.widget.TextView>(R.id.tvLiveBadge)?.visibility =
+                if (channel.streamUrl != null) View.VISIBLE else View.GONE
+        }
+
+        // Logo via Glide
+        if (channel.logoUrl.isNotEmpty()) {
+            Glide.with(ch.imgChannel)
+                .load(channel.logoUrl)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .placeholder(R.drawable.ic_channel_placeholder)
                 .error(R.drawable.ic_channel_placeholder)
                 .centerInside()
-                .into(holder.b.imgChannel)
+                .into(ch.imgChannel)
         } else {
-            holder.b.imgChannel.setImageResource(R.drawable.ic_channel_placeholder)
+            ch.imgChannel.setImageResource(R.drawable.ic_channel_placeholder)
         }
 
-        holder.b.root.setOnClickListener { onClick(ch) }
+        ch.root.setOnClickListener { onClick(channel) }
     }
 
     companion object {
