@@ -95,7 +95,7 @@ class PlayerActivity : AppCompatActivity() {
     private fun initPlayer(url: String, format: String, drmKid: String?, drmKey: String?) {
         // Prefer FFmpeg extension decoders for extra codec support
         val renderersFactory = DefaultRenderersFactory(this).apply {
-            setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
+            setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
         }
 
         trackSelector = DefaultTrackSelector(this)
