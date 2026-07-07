@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="320dp"
-    android:layout_height="180dp"
+    android:layout_height="200dp"
     android:background="@color/player_bg"
     android:elevation="20dp">
 
-    <!-- Video -->
+    <!-- Video surface -->
     <androidx.media3.ui.PlayerView
-        android:id="@+id/floatingPlayerView"
+        android:id="@+id/floatPlayerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
@@ -17,29 +17,78 @@
         android:layout_height="match_parent"
         android:background="@drawable/bg_floating_border"/>
 
-    <!-- Expand button (top-left) -->
-    <ImageButton
-        android:id="@+id/btnExpand"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="top|start"
-        android:layout_margin="6dp"
-        android:src="@drawable/ic_nav_live"
-        android:background="@drawable/bg_floating_btn"
-        android:contentDescription="Expand"
-        android:padding="6dp"/>
+    <!-- Top overlay: title + name + buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:background="#88000000">
 
-    <!-- Close button (top-right) -->
+        <!-- Title + Name -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvFloatTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="Sportzfy"/>
+            <TextView
+                android:id="@+id/tvFloatName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="9sp"
+                android:textColor="#00d4e8"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+        </LinearLayout>
+
+        <!-- Expand button -->
+        <ImageButton
+            android:id="@+id/btnFloatExpand"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_nav_live"
+            android:background="@drawable/bg_floating_btn"
+            android:contentDescription="Expand"
+            android:padding="5dp"
+            android:layout_marginLeft="4dp"/>
+
+        <!-- Close button -->
+        <ImageButton
+            android:id="@+id/btnFloatClose"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_nav_categories"
+            android:background="@drawable/bg_floating_btn"
+            android:contentDescription="Close"
+            android:padding="5dp"
+            android:layout_marginLeft="4dp"/>
+    </LinearLayout>
+
+    <!-- Centre play/pause -->
     <ImageButton
-        android:id="@+id/btnFloatClose"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="top|end"
-        android:layout_margin="6dp"
-        android:src="@drawable/ic_nav_categories"
+        android:id="@+id/btnFloatPlayPause"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:src="@android:drawable/ic_media_pause"
         android:background="@drawable/bg_floating_btn"
-        android:contentDescription="Close"
-        android:padding="6dp"/>
+        android:contentDescription="Play/Pause"
+        android:padding="8dp"/>
 
     <!-- Live dot -->
     <View
