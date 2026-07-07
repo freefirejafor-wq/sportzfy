@@ -41,13 +41,6 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-
-    // Pack native FFmpeg libs
-    packaging {
-        jniLibs {
-            useLegacyPackaging = true
-        }
-    }
 }
 
 dependencies {
@@ -63,7 +56,7 @@ dependencies {
     // Material Design
     implementation("com.google.android.material:material:1.11.0")
 
-    // Media3 / ExoPlayer — full streaming stack
+    // Media3 / ExoPlayer — full streaming stack (HLS, DASH, M3U8, RTSP, SmoothStreaming)
     implementation("androidx.media3:media3-exoplayer:1.2.1")
     implementation("androidx.media3:media3-exoplayer-hls:1.2.1")
     implementation("androidx.media3:media3-exoplayer-dash:1.2.1")
@@ -72,8 +65,6 @@ dependencies {
     implementation("androidx.media3:media3-ui:1.2.1")
     implementation("androidx.media3:media3-session:1.2.1")
     implementation("androidx.media3:media3-extractor:1.2.1")
-    // FFmpeg decoder — extra codec support (VP8, VP9, FLAC, ALAC, etc.)
-    implementation("androidx.media3:media3-decoder-ffmpeg:1.2.1")
 
     // Layout
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
