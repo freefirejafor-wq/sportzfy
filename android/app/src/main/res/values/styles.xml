@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Placeholder: all styles are in themes.xml -->
+    <style name="DarkDialogTheme" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="android:background">#1a1f2e</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="colorPrimary">#00d4e8</item>
+        <item name="colorAccent">#00d4e8</item>
+        <item name="android:windowBackground">#1a1f2e</item>
+        <item name="buttonBarPositiveButtonStyle">@style/DarkPositiveButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DarkNegativeButton</item>
+    </style>
+    <style name="DarkPositiveButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">#00d4e8</item>
+    </style>
+    <style name="DarkNegativeButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">#888888</item>
+    </style>
 </resources>
