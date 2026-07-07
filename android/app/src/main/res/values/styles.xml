@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="QualityDialogTheme" parent="Theme.MaterialComponents.Dialog">
-        <item name="colorSurface">@color/surface</item>
-        <item name="android:textColor">@color/text_primary</item>
-        <item name="colorPrimary">@color/accent</item>
-    </style>
+    <!-- Placeholder: all styles are in themes.xml -->
 </resources>
