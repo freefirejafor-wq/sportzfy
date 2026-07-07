@@ -3,11 +3,14 @@ package com.sportzfy.app
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Base64
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -21,6 +24,9 @@ class PlayerActivity : AppCompatActivity() {
         const val EXTRA_STREAM_URL   = "stream_url"
         const val EXTRA_STREAM_NAME  = "stream_name"
         const val EXTRA_MATCH_TITLE  = "match_title"
+        const val EXTRA_DRM_KID      = "drm_kid"
+        const val EXTRA_DRM_KEY      = "drm_key"
+        const val EXTRA_FORMAT       = "format"   // "hls" or "dash"
     }
 
     private lateinit var binding: ActivityPlayerBinding
@@ -34,7 +40,6 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Full landscape + keep screen on
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         @Suppress("DEPRECATION")
@@ -44,18 +49,36 @@ class PlayerActivity : AppCompatActivity() {
             View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         )
 
-        val streamUrl   = intent.getStringExtra(EXTRA_STREAM_URL) ?: return
-        val streamName  = intent.getStringExtra(EXTRA_STREAM_NAME) ?: ""
-        val matchTitle  = intent.getStringExtra(EXTRA_MATCH_TITLE) ?: ""
+        val streamUrl  = intent.getStringExtra(EXTRA_STREAM_URL)  ?: return
+        val streamName = intent.getStringExtra(EXTRA_STREAM_NAME) ?: ""
+        val matchTitle = intent.getStringExtra(EXTRA_MATCH_TITLE) ?: ""
+        val drmKid     = intent.getStringExtra(EXTRA_DRM_KID)
+        val drmKey     = intent.getStringExtra(EXTRA_DRM_KEY)
+        val format     = intent.getStringExtra(EXTRA_FORMAT) ?: "hls"
 
-        binding.tvMatchTitle.text  = matchTitle
-        binding.tvStreamName.text  = "📡 $streamName"
+        binding.tvMatchTitle.text = matchTitle
+        binding.tvStreamName.text = "📡 $streamName"
 
-        initPlayer(streamUrl)
+        initPlayer(streamUrl, format, drmKid, drmKey)
         setupControls(streamName, matchTitle)
     }
 
-    private fun initPlayer(url: String) {
+    // ── hex string → base64url (no padding) ───────────────────────────
+    private fun hexToBase64Url(hex: String): String {
+        val bytes = ByteArray(hex.length / 2) { i ->
+            hex.substring(i * 2, i * 2 + 2).toInt(16).toByte()
+        }
+        return Base64.encodeToString(bytes, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+    }
+
+    // ── build ClearKey license data-URI ───────────────────────────────
+    private fun buildClearKeyLicenseUri(kid: String, key: String): String {
+        val kidB64 = hexToBase64Url(kid)
+        val keyB64 = hexToBase64Url(key)
+        return """data:application/json,{"keys":[{"kty":"oct","k":"$keyB64","kid":"$kidB64"}],"type":"temporary"}"""
+    }
+
+    private fun initPlayer(url: String, format: String, drmKid: String?, drmKey: String?) {
         trackSelector = DefaultTrackSelector(this)
         player = ExoPlayer.Builder(this)
             .setTrackSelector(trackSelector)
@@ -63,7 +86,30 @@ class PlayerActivity : AppCompatActivity() {
             .also { exo ->
                 binding.playerView.player = exo
                 binding.playerView.useController = false
-                exo.setMediaItem(MediaItem.fromUri(url))
+
+                val mediaItem = if (format == "dash" && drmKid != null && drmKey != null) {
+                    // DASH + ClearKey DRM
+                    val licenseUri = buildClearKeyLicenseUri(drmKid, drmKey)
+                    val drmConfig = MediaItem.DrmConfiguration.Builder(C.CLEARKEY_UUID)
+                        .setLicenseUri(licenseUri)
+                        .build()
+                    MediaItem.Builder()
+                        .setUri(url)
+                        .setMimeType(MimeTypes.APPLICATION_MPD)
+                        .setDrmConfiguration(drmConfig)
+                        .build()
+                } else if (format == "dash") {
+                    // DASH without DRM
+                    MediaItem.Builder()
+                        .setUri(url)
+                        .setMimeType(MimeTypes.APPLICATION_MPD)
+                        .build()
+                } else {
+                    // HLS (default)
+                    MediaItem.fromUri(url)
+                }
+
+                exo.setMediaItem(mediaItem)
                 exo.prepare()
                 exo.playWhenReady = true
 
@@ -72,15 +118,15 @@ class PlayerActivity : AppCompatActivity() {
                         when (state) {
                             Player.STATE_BUFFERING -> {
                                 binding.progressBuffering.visibility = View.VISIBLE
-                                binding.tvBufferingMsg.visibility = View.VISIBLE
+                                binding.tvBufferingMsg.visibility    = View.VISIBLE
                             }
                             Player.STATE_READY -> {
                                 binding.progressBuffering.visibility = View.GONE
-                                binding.tvBufferingMsg.visibility = View.GONE
+                                binding.tvBufferingMsg.visibility    = View.GONE
                             }
                             Player.STATE_ENDED, Player.STATE_IDLE -> {
                                 binding.progressBuffering.visibility = View.GONE
-                                binding.tvBufferingMsg.visibility = View.GONE
+                                binding.tvBufferingMsg.visibility    = View.GONE
                             }
                         }
                     }
@@ -91,89 +137,41 @@ class PlayerActivity : AppCompatActivity() {
 
                     override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
                         binding.progressBuffering.visibility = View.GONE
-                        binding.tvBufferingMsg.visibility = View.VISIBLE
-                        binding.tvBufferingMsg.text = "⚠ Stream error — try another stream"
+                        binding.tvBufferingMsg.visibility    = View.GONE
+                        AlertDialog.Builder(this@PlayerActivity)
+                            .setTitle("⚠️ Playback Error")
+                            .setMessage("Stream could not be loaded.\n\n${error.message}")
+                            .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                            .show()
                     }
                 })
             }
     }
 
     private fun setupControls(streamName: String, matchTitle: String) {
-        // Tap to toggle controls
-        binding.playerView.setOnClickListener {
-            if (isLocked) {
-                showLockOnly()
-                return@setOnClickListener
-            }
-            if (binding.topBar.visibility == View.VISIBLE) hideControls()
-            else showControls()
-        }
-
-        // Back (minimize to floating)
-        binding.btnBack.setOnClickListener { minimizeToFloating(streamName, matchTitle) }
-
-        // Close
-        binding.btnClose.setOnClickListener { finish() }
-
-        // Play/Pause
-        binding.btnPlayPause.setOnClickListener {
-            player?.let { if (it.isPlaying) it.pause() else it.play() }
-            resetControlsTimer()
-        }
-
-        // Lock
+        binding.root.setOnClickListener { toggleControls() }
+        binding.btnPlayPause.setOnClickListener { player?.let { if (it.isPlaying) it.pause() else it.play() } }
+        binding.btnBack.setOnClickListener { finish() }
+        binding.btnQuality.setOnClickListener { showQualityDialog() }
         binding.btnLock.setOnClickListener {
-            isLocked = true
-            binding.topBar.visibility = View.GONE
-            binding.bottomBar.visibility = View.GONE
-            binding.lockOverlay.visibility = View.VISIBLE
+            isLocked = !isLocked
+            binding.btnLock.text = if (isLocked) "🔒" else "🔓"
+            binding.controlsContainer.visibility = if (isLocked) View.GONE else View.VISIBLE
         }
-
-        // Unlock
-        binding.btnUnlock.setOnClickListener {
-            isLocked = false
-            binding.lockOverlay.visibility = View.GONE
-            showControls()
-        }
-
-        // Quality select
-        binding.btnQuality.setOnClickListener {
-            showQualityDialog()
-            resetControlsTimer()
-        }
-
-        // Streams
-        binding.btnStreams.setOnClickListener {
-            val sheet = com.sportzfy.app.ui.StreamPickerBottomSheet.newInstance(matchTitle)
-            sheet.show(supportFragmentManager, "streams")
-            resetControlsTimer()
-        }
-
-        // Floating mini player
-        binding.btnFloat.setOnClickListener { minimizeToFloating(streamName, matchTitle) }
-
-        showControls()
+        binding.btnMinimize.setOnClickListener { minimizeToFloating(streamName, matchTitle) }
+        scheduleHideControls()
     }
 
-    private fun showControls() {
+    private fun toggleControls() {
         if (isLocked) return
-        binding.topBar.visibility = View.VISIBLE
-        binding.bottomBar.visibility = View.VISIBLE
-        resetControlsTimer()
+        val controls = binding.controlsContainer
+        if (controls.visibility == View.VISIBLE) hideControls()
+        else { controls.visibility = View.VISIBLE; scheduleHideControls() }
     }
 
-    private fun hideControls() {
-        binding.topBar.visibility = View.GONE
-        binding.bottomBar.visibility = View.GONE
-    }
+    private fun hideControls() { binding.controlsContainer.visibility = View.GONE }
 
-    private fun showLockOnly() {
-        // Just pulse the overlay briefly
-        binding.lockOverlay.alpha = 1f
-        binding.lockOverlay.animate().alpha(0f).setStartDelay(1500).setDuration(400).start()
-    }
-
-    private fun resetControlsTimer() {
+    private fun scheduleHideControls() {
         binding.root.removeCallbacks(hideControlsRunnable)
         binding.root.postDelayed(hideControlsRunnable, 4000)
     }
@@ -207,19 +205,7 @@ class PlayerActivity : AppCompatActivity() {
             .show()
     }
 
-    override fun onResume() {
-        super.onResume()
-        player?.play()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        player?.pause()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        player?.release()
-        player = null
-    }
+    override fun onResume()  { super.onResume();  player?.play() }
+    override fun onPause()   { super.onPause();   player?.pause() }
+    override fun onDestroy() { super.onDestroy(); player?.release(); player = null }
 }
