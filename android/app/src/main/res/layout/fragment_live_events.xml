@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="Search matches…"
-                android:hintTextColor="@color/text_dim"
+                android:textColorHint="@color/text_dim"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:paddingHorizontal="16dp"
