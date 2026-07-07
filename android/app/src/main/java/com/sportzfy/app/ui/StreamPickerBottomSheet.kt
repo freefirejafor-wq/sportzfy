@@ -33,6 +33,12 @@ class StreamPickerBottomSheet : BottomSheetDialogFragment() {
         fun newInstance(matchTitle: String) = StreamPickerBottomSheet().apply {
             arguments = Bundle().also { it.putString(ARG_TITLE, matchTitle) }
         }
+
+        // DiffUtil defined here so StreamAdapter can reference it via companion
+        val STREAM_DIFF = object : DiffUtil.ItemCallback<Stream>() {
+            override fun areItemsTheSame(a: Stream, b: Stream) = a.id == b.id
+            override fun areContentsTheSame(a: Stream, b: Stream) = a == b
+        }
     }
 
     override fun getTheme() = R.style.BottomSheetTheme
@@ -47,13 +53,12 @@ class StreamPickerBottomSheet : BottomSheetDialogFragment() {
         matchTitle = arguments?.getString(ARG_TITLE) ?: "Watch Now"
         binding.tvMatchTitle.text = matchTitle
 
-        // Stream list
         streamAdapter = StreamAdapter { stream ->
             dismiss()
             val intent = Intent(requireContext(), PlayerActivity::class.java).apply {
-                putExtra(PlayerActivity.EXTRA_STREAM_URL, stream.url)
-                putExtra(PlayerActivity.EXTRA_STREAM_NAME, stream.name)
-                putExtra(PlayerActivity.EXTRA_MATCH_TITLE, matchTitle)
+                putExtra(PlayerActivity.EXTRA_STREAM_URL,   stream.url)
+                putExtra(PlayerActivity.EXTRA_STREAM_NAME,  stream.name)
+                putExtra(PlayerActivity.EXTRA_MATCH_TITLE,  matchTitle)
             }
             requireContext().startActivity(intent)
         }
@@ -71,9 +76,7 @@ class StreamPickerBottomSheet : BottomSheetDialogFragment() {
                 chipStrokeWidth = 1f
                 setChipStrokeColorResource(R.color.accent)
             }
-            chip.setOnClickListener {
-                streamAdapter.submitList(getStreamsByCategory(cat))
-            }
+            chip.setOnClickListener { streamAdapter.submitList(getStreamsByCategory(cat)) }
             binding.chipGroupCategories.addView(chip)
         }
 
@@ -86,12 +89,12 @@ class StreamPickerBottomSheet : BottomSheetDialogFragment() {
     }
 
     // ── Stream list adapter ───────────────────────────────────────────
-    inner class StreamAdapter(
+    class StreamAdapter(
         private val onClick: (Stream) -> Unit
-    ) : ListAdapter<Stream, StreamAdapter.VH>(DIFF) {
+    ) : ListAdapter<Stream, StreamAdapter.VH>(STREAM_DIFF) {
 
         inner class VH(view: View) : RecyclerView.ViewHolder(view) {
-            val tvName: TextView = view.findViewById(R.id.tvStreamName)
+            val tvName: TextView    = view.findViewById(R.id.tvStreamName)
             val tvQuality: TextView = view.findViewById(R.id.tvQuality)
         }
 
@@ -115,11 +118,6 @@ class StreamPickerBottomSheet : BottomSheetDialogFragment() {
                 )
             )
             holder.itemView.setOnClickListener { onClick(stream) }
-        }
-
-        val DIFF = object : DiffUtil.ItemCallback<Stream>() {
-            override fun areItemsTheSame(a: Stream, b: Stream) = a.id == b.id
-            override fun areContentsTheSame(a: Stream, b: Stream) = a == b
         }
     }
 }
