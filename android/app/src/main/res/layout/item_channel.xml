@@ -8,25 +8,47 @@
     android:padding="8dp"
     android:layout_margin="4dp">
 
-    <androidx.cardview.widget.CardView
+    <!-- Logo card with LIVE badge overlay -->
+    <FrameLayout
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:layout_marginBottom="6dp"
-        app:cardBackgroundColor="@color/card_bg"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="0dp"
-        app:strokeColor="@color/card_border"
-        app:strokeWidth="1dp">
+        android:layout_marginBottom="6dp">
 
-        <ImageView
-            android:id="@+id/imgChannel"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_gravity="center"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_channel_placeholder"
-            android:padding="4dp"/>
-    </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            app:cardBackgroundColor="@color/card_bg"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/card_border"
+            app:strokeWidth="1dp">
+
+            <ImageView
+                android:id="@+id/imgChannel"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_gravity="center"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_channel_placeholder"
+                android:padding="4dp"/>
+        </androidx.cardview.widget.CardView>
+
+        <!-- 🔴 LIVE badge — shown only for direct-stream channels -->
+        <TextView
+            android:id="@+id/tvLiveBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_margin="3dp"
+            android:text=" LIVE "
+            android:textSize="7sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/bg_badge_live"
+            android:visibility="gone"
+            android:paddingHorizontal="3dp"
+            android:paddingVertical="1dp"/>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tvChannelName"
@@ -38,4 +60,5 @@
         android:gravity="center"
         android:maxLines="2"
         android:ellipsize="end"/>
+
 </LinearLayout>
