@@ -5,40 +5,38 @@
     android:layout_height="match_parent"
     android:background="@color/player_bg">
 
-    <!-- Video player -->
+    <!-- ── Video surface ── -->
     <androidx.media3.ui.PlayerView
         android:id="@+id/playerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/player_bg"/>
 
-    <!-- Buffering -->
+    <!-- ── Buffering ── -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
         android:gravity="center">
-
         <ProgressBar
             android:id="@+id/progressBuffering"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:indeterminateTint="@color/accent"
             android:visibility="visible"/>
-
         <TextView
             android:id="@+id/tvBufferingMsg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Loading stream…"
+            android:text="লোড হচ্ছে…"
             android:textColor="@color/text_muted"
             android:textSize="13sp"
             android:layout_marginTop="8dp"
             android:visibility="visible"/>
     </LinearLayout>
 
-    <!-- TOP BAR -->
+    <!-- ── TOP BAR ── -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
@@ -46,31 +44,30 @@
         android:layout_gravity="top"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
+        android:paddingHorizontal="14dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:background="@drawable/bg_player_gradient_top">
 
-        <!-- Back/Minimize -->
+        <!-- Back → floating -->
         <TextView
             android:id="@+id/btnBack"
             android:layout_width="38dp"
             android:layout_height="38dp"
             android:text="⬇"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textColor="@color/text_primary"
             android:gravity="center"
             android:background="@drawable/bg_player_btn"
-            android:layout_marginEnd="10dp"/>
+            android:layout_marginEnd="8dp"/>
 
-        <!-- Title area -->
+        <!-- Title block -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center">
-
             <TextView
                 android:id="@+id/tvMatchTitle"
                 android:layout_width="wrap_content"
@@ -78,19 +75,41 @@
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
-                android:gravity="center"
                 android:maxLines="1"
                 android:ellipsize="end"/>
-
             <TextView
                 android:id="@+id/tvStreamName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="11sp"
                 android:textColor="@color/accent"
-                android:gravity="center"
                 android:layout_marginTop="2dp"/>
         </LinearLayout>
+
+        <!-- Add Custom URL -->
+        <TextView
+            android:id="@+id/btnAddUrl"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:text="＋"
+            android:textSize="18sp"
+            android:textColor="@color/accent"
+            android:gravity="center"
+            android:background="@drawable/bg_player_btn"
+            android:layout_marginStart="6dp"/>
+
+        <!-- Quality -->
+        <TextView
+            android:id="@+id/btnQuality"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:text="HD"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent"
+            android:gravity="center"
+            android:background="@drawable/bg_player_btn"
+            android:layout_marginStart="6dp"/>
 
         <!-- Close -->
         <TextView
@@ -102,101 +121,126 @@
             android:textColor="@color/text_primary"
             android:gravity="center"
             android:background="@drawable/bg_player_btn"
-            android:layout_marginStart="10dp"/>
+            android:layout_marginStart="6dp"/>
     </LinearLayout>
 
-    <!-- CENTER PLAY/PAUSE -->
-    <TextView
-        android:id="@+id/btnPlayPause"
-        android:layout_width="68dp"
-        android:layout_height="68dp"
+    <!-- ── CENTER CONTROLS ── -->
+    <LinearLayout
+        android:id="@+id/centerControls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="⏸"
-        android:textSize="28sp"
-        android:textColor="@color/text_primary"
-        android:gravity="center"
-        android:background="@drawable/bg_play_btn"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:visibility="gone">
 
-    <!-- BOTTOM BAR -->
+        <!-- Rewind 10s -->
+        <TextView
+            android:id="@+id/btnRewind"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:text="«10"
+            android:textSize="13sp"
+            android:textColor="@color/text_primary"
+            android:gravity="center"
+            android:background="@drawable/bg_player_btn"
+            android:layout_marginEnd="20dp"/>
+
+        <!-- Play / Pause -->
+        <TextView
+            android:id="@+id/btnPlayPause"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:text="⏸"
+            android:textSize="22sp"
+            android:textColor="@color/text_primary"
+            android:gravity="center"
+            android:background="@drawable/bg_play_btn"/>
+
+        <!-- Forward 10s -->
+        <TextView
+            android:id="@+id/btnForward"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:text="10»"
+            android:textSize="13sp"
+            android:textColor="@color/text_primary"
+            android:gravity="center"
+            android:background="@drawable/bg_player_btn"
+            android:layout_marginStart="20dp"/>
+    </LinearLayout>
+
+    <!-- ── LOCK BUTTON (always visible centre-right) ── -->
+    <TextView
+        android:id="@+id/btnLock"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="16dp"
+        android:text="🔒"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:background="@drawable/bg_player_btn"
+        android:visibility="gone"/>
+
+    <!-- ── BOTTOM BAR ── -->
     <LinearLayout
         android:id="@+id/bottomBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:paddingVertical="14dp"
-        android:paddingHorizontal="20dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="14dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="14dp"
         android:background="@drawable/bg_player_gradient_bottom">
 
-        <!-- Streams -->
-        <LinearLayout
-            android:id="@+id/btnStreams"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📡" android:textSize="20sp"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Streams" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/text_muted" android:layout_marginTop="4dp"/>
-        </LinearLayout>
-
-        <!-- Quality -->
-        <LinearLayout
-            android:id="@+id/btnQuality"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🎯" android:textSize="20sp"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Quality" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/text_muted" android:layout_marginTop="4dp"/>
-        </LinearLayout>
-
-        <!-- Mini / Float -->
-        <LinearLayout
-            android:id="@+id/btnFloat"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📌" android:textSize="20sp"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Mini" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/text_muted" android:layout_marginTop="4dp"/>
-        </LinearLayout>
-
-        <!-- Lock -->
-        <LinearLayout
-            android:id="@+id/btnLock"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔒" android:textSize="20sp"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Lock" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/text_muted" android:layout_marginTop="4dp"/>
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!-- LOCK OVERLAY -->
-    <FrameLayout
-        android:id="@+id/lockOverlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/overlay_light"
-        android:visibility="gone">
-
+        <!-- Float / PiP -->
         <TextView
-            android:id="@+id/btnUnlock"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="20dp"
-            android:text="🔓"
-            android:textSize="22sp"
+            android:id="@+id/btnFloat"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:text="⧉"
+            android:textSize="16sp"
+            android:textColor="@color/accent"
             android:gravity="center"
-            android:background="@drawable/bg_unlock_btn"/>
-    </FrameLayout>
+            android:background="@drawable/bg_player_btn"
+            android:layout_marginEnd="8dp"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+
+        <!-- Live badge -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:background="@drawable/bg_badge_live">
+            <View
+                android:layout_width="7dp"
+                android:layout_height="7dp"
+                android:background="@drawable/bg_live_dot"
+                android:layout_marginEnd="5dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LIVE"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:letterSpacing="0.08"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
 </FrameLayout>
