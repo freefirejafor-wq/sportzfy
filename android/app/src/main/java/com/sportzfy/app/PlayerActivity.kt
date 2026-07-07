@@ -1,22 +1,24 @@
 package com.sportzfy.app
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
-import android.view.WindowInsets
-import android.view.WindowInsetsController
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.common.Tracks
+import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.dash.DashMediaSource
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.datasource.DefaultHttpDataSource
 import com.sportzfy.app.databinding.ActivityPlayerBinding
 
 class PlayerActivity : AppCompatActivity() {
@@ -29,32 +31,38 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
     private var player: ExoPlayer? = null
     private lateinit var trackSelector: DefaultTrackSelector
-
-    private var streamUrl   = ""
+    private var isLocked = false
+    private var controlsVisible = true
+    private val hideHandler = Handler(Looper.getMainLooper())
+    private val hideRunnable = Runnable { hideControls() }
+    private var streamUrl = ""
     private var streamTitle = ""
-    private var isLocked    = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Keep screen on
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        // Fullscreen landscape
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_FULLSCREEN or
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        )
+
         streamUrl   = intent.getStringExtra(EXTRA_URL)   ?: ""
         streamTitle = intent.getStringExtra(EXTRA_TITLE) ?: "Live Stream"
 
-        if (streamUrl.isEmpty()) {
-            Toast.makeText(this, "Stream URL পাওয়া যায়নি", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
+        binding.textTitle.text = streamTitle
 
-        binding.tvTitle.text = streamTitle
-        enableFullscreen()
         setupPlayer()
         setupControls()
+        scheduleHideControls()
     }
-
-    // ─── Player ───────────────────────────────────────────────────────────────
 
     private fun setupPlayer() {
         trackSelector = DefaultTrackSelector(this)
@@ -62,168 +70,160 @@ class PlayerActivity : AppCompatActivity() {
         player = ExoPlayer.Builder(this)
             .setTrackSelector(trackSelector)
             .build()
-            .also { exo ->
-                binding.playerView.player = exo
 
-                val mediaItem = when {
-                    streamUrl.contains(".m3u8") ->
-                        MediaItem.Builder().setUri(streamUrl)
-                            .setMimeType(MimeTypes.APPLICATION_M3U8).build()
-                    streamUrl.contains(".mpd") ->
-                        MediaItem.Builder().setUri(streamUrl)
-                            .setMimeType(MimeTypes.APPLICATION_MPD).build()
-                    else -> MediaItem.fromUri(streamUrl)
+        binding.playerView.player = player
+
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+            .setUserAgent("Sportzfy/6.0 Android")
+            .setAllowCrossProtocolRedirects(true)
+
+        val mediaSource = when {
+            streamUrl.contains(".mpd", ignoreCase = true) ->
+                DashMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(MediaItem.fromUri(streamUrl))
+            else ->
+                HlsMediaSource.Factory(dataSourceFactory)
+                    .createMediaSource(MediaItem.fromUri(streamUrl))
+        }
+
+        player?.apply {
+            setMediaSource(mediaSource)
+            prepare()
+            playWhenReady = true
+
+            addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(state: Int) {
+                    when (state) {
+                        Player.STATE_BUFFERING -> binding.progressBuffering.visibility = View.VISIBLE
+                        Player.STATE_READY     -> binding.progressBuffering.visibility = View.GONE
+                        Player.STATE_ENDED     -> finish()
+                        else                   -> {}
+                    }
                 }
-
-                exo.setMediaItem(mediaItem)
-                exo.prepare()
-                exo.play()
-
-                exo.addListener(object : Player.Listener {
-                    override fun onPlayerError(error: PlaybackException) {
-                        Toast.makeText(
-                            this@PlayerActivity,
-                            "স্ট্রিম লোড হয়নি: ${error.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-
-                    override fun onTracksChanged(tracks: Tracks) {
-                        val hasVariants = tracks.groups.any { g ->
-                            g.type == C.TRACK_TYPE_VIDEO && g.length > 1
-                        }
-                        binding.btnQuality.isEnabled = hasVariants
-                    }
-                })
-            }
+                override fun onPlayerError(error: PlaybackException) {
+                    binding.progressBuffering.visibility = View.GONE
+                    showError(error.message ?: "Stream error")
+                }
+            })
+        }
     }
-
-    // ─── Controls ─────────────────────────────────────────────────────────────
 
     private fun setupControls() {
-        // ← Back
-        binding.btnBack.setOnClickListener {
-            if (!isLocked) finish()
+        // Back button
+        binding.btnBack.setOnClickListener { finish() }
+
+        // Play/Pause
+        binding.btnPlayPause.setOnClickListener {
+            player?.let {
+                if (it.isPlaying) it.pause() else it.play()
+                updatePlayPauseIcon()
+            }
+            scheduleHideControls()
         }
 
-        // 🔒 Lock
+        // Lock button
         binding.btnLock.setOnClickListener {
             isLocked = true
-            binding.topControlsBar.visibility  = View.GONE
-            binding.bottomControlsBar.visibility = View.GONE
-            binding.lockOverlay.visibility      = View.VISIBLE
-            Toast.makeText(this, "🔒 কন্ট্রোল লক হয়েছে", Toast.LENGTH_SHORT).show()
+            binding.topControls.visibility    = View.GONE
+            binding.bottomControls.visibility = View.GONE
+            binding.lockOverlay.visibility    = View.VISIBLE
         }
 
-        // 🔓 Unlock
+        // Unlock button
         binding.btnUnlock.setOnClickListener {
             isLocked = false
-            binding.lockOverlay.visibility      = View.GONE
-            binding.topControlsBar.visibility  = View.VISIBLE
-            binding.bottomControlsBar.visibility = View.VISIBLE
-            Toast.makeText(this, "🔓 কন্ট্রোল আনলক হয়েছে", Toast.LENGTH_SHORT).show()
+            binding.lockOverlay.visibility = View.GONE
+            showControls()
         }
 
-        // 🎚️ Quality
-        binding.btnQuality.setOnClickListener { showQualityDialog() }
+        // Quality
+        binding.btnQuality.setOnClickListener {
+            showQualityDialog()
+            scheduleHideControls()
+        }
 
-        // 🪟 Floating
-        binding.btnFloating.setOnClickListener { startFloatingPlayer() }
+        // Floating player
+        binding.btnFloat.setOnClickListener {
+            val intent = Intent(this, FloatingPlayerService::class.java).apply {
+                putExtra(FloatingPlayerService.EXTRA_URL,   streamUrl)
+                putExtra(FloatingPlayerService.EXTRA_TITLE, streamTitle)
+            }
+            startForegroundService(intent)
+            finish()
+        }
 
-        // ⛶ Fullscreen toggle
-        binding.btnFullscreen.setOnClickListener { toggleOrientation() }
+        // Tap to toggle controls
+        binding.playerView.setOnClickListener {
+            if (!isLocked) {
+                if (controlsVisible) hideControls() else showControls()
+            }
+        }
     }
 
-    // ─── Quality Dialog ────────────────────────────────────────────────────────
-
     private fun showQualityDialog() {
-        val tracks = player?.currentTracks ?: return
-        val videoGroups = tracks.groups.filter { it.type == C.TRACK_TYPE_VIDEO }
-
-        if (videoGroups.isEmpty()) {
-            Toast.makeText(this, "কোয়ালিটি তথ্য পাওয়া যায়নি", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val group   = videoGroups.first()
-        val labels  = mutableListOf("Auto")
-        val heights = mutableListOf(-1)
-
-        for (i in 0 until group.length) {
-            if (!group.isTrackSupported(i)) continue
-            val fmt = group.getTrackFormat(i)
-            val label = when {
-                fmt.height >= 1080 -> "1080p Full HD"
-                fmt.height >= 720  -> "720p HD"
-                fmt.height >= 480  -> "480p SD"
-                fmt.height >= 360  -> "360p"
-                fmt.height > 0     -> "${fmt.height}p"
-                else               -> "Track ${i + 1}"
-            }
-            labels.add(label)
-            heights.add(fmt.height)
-        }
-
-        AlertDialog.Builder(this)
-            .setTitle("কোয়ালিটি বেছে নিন")
-            .setItems(labels.toTypedArray()) { _, which ->
-                val h = heights[which]
+        val formats = trackSelector.currentMappedTrackInfo ?: return
+        val items = arrayOf("🔄 Auto", "🔵 HD 1080p", "🟢 HD 720p", "🟡 SD 480p", "🟡 SD 360p")
+        AlertDialog.Builder(this, R.style.QualityDialogTheme)
+            .setTitle("Select Quality")
+            .setItems(items) { _, which ->
                 val params = trackSelector.buildUponParameters()
-                if (h == -1) {
-                    params.clearVideoSizeConstraints()
-                    binding.btnQuality.text = "Auto"
-                } else {
-                    params.setMaxVideoSize(Int.MAX_VALUE, h).setMinVideoSize(0, h)
-                    binding.btnQuality.text = labels[which].substringBefore(" ")
+                when (which) {
+                    0 -> params.setMaxVideoSize(Int.MAX_VALUE, Int.MAX_VALUE)
+                    1 -> params.setMaxVideoSize(1920, 1080)
+                    2 -> params.setMaxVideoSize(1280, 720)
+                    3 -> params.setMaxVideoSize(854, 480)
+                    4 -> params.setMaxVideoSize(640, 360)
                 }
                 trackSelector.setParameters(params)
             }
             .show()
     }
 
-    // ─── Floating Player ───────────────────────────────────────────────────────
-
-    private fun startFloatingPlayer() {
-        val intent = Intent(this, FloatingPlayerService::class.java).apply {
-            putExtra(FloatingPlayerService.EXTRA_URL,   streamUrl)
-            putExtra(FloatingPlayerService.EXTRA_TITLE, streamTitle)
-        }
-        startForegroundService(intent)
-        player?.stop()
-        finish()
+    private fun showError(msg: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Stream Error")
+            .setMessage("Could not load stream.\n$msg")
+            .setPositiveButton("Retry") { _, _ -> setupPlayer() }
+            .setNegativeButton("Back")  { _, _ -> finish() }
+            .show()
     }
 
-    // ─── Fullscreen ────────────────────────────────────────────────────────────
-
-    private fun toggleOrientation() {
-        requestedOrientation =
-            if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            else
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+    private fun showControls() {
+        controlsVisible = true
+        binding.topControls.visibility    = View.VISIBLE
+        binding.bottomControls.visibility = View.VISIBLE
+        scheduleHideControls()
     }
 
-    private fun enableFullscreen() {
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            window.insetsController?.apply {
-                hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                systemBarsBehavior =
-                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-            )
-        }
+    private fun hideControls() {
+        controlsVisible = false
+        binding.topControls.visibility    = View.GONE
+        binding.bottomControls.visibility = View.GONE
     }
 
-    // ─── Lifecycle ─────────────────────────────────────────────────────────────
+    private fun scheduleHideControls() {
+        hideHandler.removeCallbacks(hideRunnable)
+        hideHandler.postDelayed(hideRunnable, 3500)
+    }
 
-    override fun onPause()   { super.onPause();   player?.pause() }
-    override fun onResume()  { super.onResume();  player?.play(); enableFullscreen() }
-    override fun onDestroy() { super.onDestroy(); player?.release(); player = null }
+    private fun updatePlayPauseIcon() {
+        binding.btnPlayPause.text = if (player?.isPlaying == true) "⏸" else "▶"
+    }
+
+    override fun onResume() {
+        super.onResume()
+        player?.play()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        player?.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        hideHandler.removeCallbacks(hideRunnable)
+        player?.release()
+        player = null
+    }
 }

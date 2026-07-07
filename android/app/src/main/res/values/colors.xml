@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#1A1A2E</color>
-    <color name="primary_dark">#16213E</color>
-    <color name="accent">#E94560</color>
-    <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
-    <color name="overlay_dark">#AA000000</color>
-    <color name="player_bg">#0F0F0F</color>
-    <color name="control_bg">#CC1A1A2E</color>
+    <color name="accent">#00D4E8</color>
+    <color name="accent_dark">#0099AA</color>
+    <color name="live_red">#E53E3E</color>
+    <color name="live_red_bg">#2A0F0F</color>
+    <color name="upcoming_blue">#00D4E8</color>
+    <color name="upcoming_bg">#0A1F22</color>
+    <color name="finished_gray">#888888</color>
+    <color name="hot_orange">#FF6600</color>
+
+    <color name="bg_primary">#0B0F1A</color>
+    <color name="bg_surface">#111827</color>
+    <color name="bg_card">#131929</color>
+    <color name="bg_card2">#1A2035</color>
+    <color name="divider">#1E2A3A</color>
+
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#8899AA</color>
+    <color name="text_hint">#556070</color>
+
+    <color name="chip_inactive">#556070</color>
+    <color name="bottom_nav_active">#00D4E8</color>
+    <color name="bottom_nav_inactive">#4A5568</color>
+
+    <color name="quality_fhd_bg">#0D2233</color>
+    <color name="quality_fhd_text">#00D4E8</color>
+    <color name="quality_hd_bg">#0D2200</color>
+    <color name="quality_hd_text">#44DD44</color>
+    <color name="quality_sd_bg">#2D1900</color>
+    <color name="quality_sd_text">#FFAA00</color>
 </resources>

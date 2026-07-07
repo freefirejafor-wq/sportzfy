@@ -1,126 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="@android:color/black">
 
-    <!-- ExoPlayer View -->
+    <!-- ExoPlayer view -->
     <androidx.media3.ui.PlayerView
         android:id="@+id/playerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusable="true" />
+        app:use_controller="false"
+        app:resize_mode="fit"/>
 
-    <!-- Top Controls Bar -->
+    <!-- Buffering spinner -->
+    <ProgressBar
+        android:id="@+id/progressBuffering"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/accent"
+        android:visibility="visible"/>
+
+    <!-- TOP controls -->
     <LinearLayout
-        android:id="@+id/topControlsBar"
+        android:id="@+id/topControls"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="12dp"
-        android:background="@color/overlay_dark">
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:background="#99000000">
 
-        <ImageButton
+        <Button
             android:id="@+id/btnBack"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_media_previous"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="@color/white"
-            android:contentDescription="Back" />
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:text="←"
+            android:textSize="20sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@android:color/transparent"
+            android:padding="0dp"/>
 
         <TextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/textTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Sportzfy"
-            android:textColor="@color/white"
-            android:textSize="16sp"
+            android:layout_marginStart="8dp"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
             android:ellipsize="end"
-            android:singleLine="true"
-            android:layout_marginStart="8dp" />
+            android:singleLine="true"/>
 
-        <!-- Quality Button -->
+        <!-- Quality -->
         <Button
             android:id="@+id/btnQuality"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:text="HD"
-            android:textColor="@color/white"
             android:textSize="12sp"
-            android:backgroundTint="@color/accent"
-            android:paddingHorizontal="12dp"
-            android:layout_marginEnd="8dp" />
+            android:textColor="@color/accent"
+            android:backgroundTint="#33000000"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"/>
 
-        <!-- Lock Button -->
-        <ImageButton
-            android:id="@+id/btnLock"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_lock_lock"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="@color/white"
-            android:contentDescription="Lock" />
-
+        <!-- Float -->
+        <Button
+            android:id="@+id/btnFloat"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:text="⧉"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@android:color/transparent"
+            android:padding="0dp"
+            android:layout_marginStart="4dp"/>
     </LinearLayout>
 
-    <!-- Bottom Controls Bar -->
+    <!-- BOTTOM controls -->
     <LinearLayout
-        android:id="@+id/bottomControlsBar"
+        android:id="@+id/bottomControls"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="12dp"
-        android:background="@color/overlay_dark">
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:background="#99000000">
 
-        <!-- Floating Player Button -->
-        <ImageButton
-            android:id="@+id/btnFloating"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_view"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="@color/white"
-            android:contentDescription="Floating Player" />
+        <!-- Play/Pause -->
+        <Button
+            android:id="@+id/btnPlayPause"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:text="⏸"
+            android:textSize="24sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@android:color/transparent"
+            android:padding="0dp"/>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1" />
+        <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
 
-        <!-- Fullscreen Button -->
-        <ImageButton
-            android:id="@+id/btnFullscreen"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_zoom"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="@color/white"
-            android:contentDescription="Fullscreen" />
-
+        <!-- Lock -->
+        <Button
+            android:id="@+id/btnLock"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:text="🔒"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="@android:color/transparent"
+            android:padding="0dp"/>
     </LinearLayout>
 
-    <!-- Lock Overlay — সব control লুকিয়ে দেয় -->
-    <RelativeLayout
+    <!-- LOCK overlay -->
+    <FrameLayout
         android:id="@+id/lockOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone">
 
-        <ImageButton
+        <Button
             android:id="@+id/btnUnlock"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_centerInParent="true"
-            android:src="@android:drawable/ic_lock_lock"
-            android:backgroundTint="@color/accent"
-            android:tint="@color/white"
-            android:contentDescription="Unlock" />
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_gravity="center_end"
+            android:layout_marginEnd="24dp"
+            android:text="🔓 Unlock"
+            android:textSize="13sp"
+            android:textColor="@color/accent"
+            android:backgroundTint="#33000000"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"/>
+    </FrameLayout>
 
-    </RelativeLayout>
-
-</RelativeLayout>
+</FrameLayout>

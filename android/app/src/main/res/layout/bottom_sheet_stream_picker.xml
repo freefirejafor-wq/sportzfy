@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_bottom_sheet"
+    android:paddingBottom="16dp">
+
+    <!-- Handle bar -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_handle"/>
+
+    <!-- Match title -->
+    <TextView
+        android:id="@+id/textMatchTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:maxLines="2"
+        android:ellipsize="end"/>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"/>
+
+    <!-- Stream label -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:paddingBottom="8dp"
+        android:text="📡 Select Stream"
+        android:textSize="13sp"
+        android:textColor="@color/text_secondary"/>
+
+    <!-- Stream list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerStreams"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:clipToPadding="false"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"/>
+
+    <!-- Close button -->
+    <Button
+        android:id="@+id/btnClose"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="8dp"
+        android:text="Cancel"
+        android:textColor="@color/text_secondary"
+        android:backgroundTint="@color/bg_card"
+        android:textSize="14sp"/>
+
+</LinearLayout>

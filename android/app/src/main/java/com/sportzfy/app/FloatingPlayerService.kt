@@ -3,11 +3,9 @@ package com.sportzfy.app
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
-import android.os.Build
 import android.os.IBinder
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -15,132 +13,126 @@ import android.view.MotionEvent
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MimeTypes
 import androidx.media3.exoplayer.ExoPlayer
-import com.sportzfy.app.databinding.FloatingPlayerBinding
+import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.dash.DashMediaSource
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.ui.PlayerView
+import android.widget.ImageButton
 
 class FloatingPlayerService : Service() {
 
     companion object {
-        const val EXTRA_URL   = "stream_url"
-        const val EXTRA_TITLE = "stream_title"
-        const val CHANNEL_ID  = "sportzfy_floating"
-        const val NOTIF_ID    = 1001
+        const val EXTRA_URL   = "float_url"
+        const val EXTRA_TITLE = "float_title"
+        private const val CHANNEL_ID = "sportzfy_float"
     }
 
-    private var floatingView: android.view.View? = null
     private var windowManager: WindowManager? = null
+    private var floatView: android.view.View? = null
     private var player: ExoPlayer? = null
-    private lateinit var binding: FloatingPlayerBinding
-
-    private var streamUrl   = ""
-    private var streamTitle = ""
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        startForeground(1, buildNotification())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        streamUrl   = intent?.getStringExtra(EXTRA_URL)   ?: ""
-        streamTitle = intent?.getStringExtra(EXTRA_TITLE) ?: "Live"
-        startForeground(NOTIF_ID, buildNotification())
-        showFloatingPlayer()
-        return START_NOT_STICKY
+        val url   = intent?.getStringExtra(EXTRA_URL)   ?: return START_NOT_STICKY
+        val title = intent.getStringExtra(EXTRA_TITLE) ?: "Live Stream"
+
+        setupFloatingWindow(url)
+        return START_STICKY
     }
 
-    private fun showFloatingPlayer() {
+    private fun setupFloatingWindow(url: String) {
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        binding       = FloatingPlayerBinding.inflate(LayoutInflater.from(this))
-        floatingView  = binding.root
 
-        val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        else
-            @Suppress("DEPRECATION") WindowManager.LayoutParams.TYPE_PHONE
+        floatView = LayoutInflater.from(this).inflate(R.layout.floating_player, null)
 
         val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            type,
+            320.dp, 180.dp,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = 50; y = 200
+            x = 100; y = 100
         }
 
-        windowManager?.addView(floatingView, params)
-        setupDrag(params)
-        setupPlayer()
+        // Drag to move
+        var lastX = 0; var lastY = 0; var startX = 0; var startY = 0
+        floatView?.setOnTouchListener { v, ev ->
+            when (ev.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    lastX = ev.rawX.toInt(); lastY = ev.rawY.toInt()
+                    startX = params.x; startY = params.y
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    params.x = startX + (ev.rawX.toInt() - lastX)
+                    params.y = startY + (ev.rawY.toInt() - lastY)
+                    windowManager?.updateViewLayout(floatView, params)
+                }
+            }
+            false
+        }
 
-        // Drag করে সরানো যাবে, controls লুকানো থাকবে
-        binding.btnClose.setOnClickListener   { stopSelf() }
-        binding.btnExpand.setOnClickListener  {
-            startActivity(Intent(this, PlayerActivity::class.java).apply {
+        // Expand button
+        floatView?.findViewById<ImageButton>(R.id.btnExpand)?.setOnClickListener {
+            val i = Intent(this, PlayerActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                putExtra(PlayerActivity.EXTRA_URL,   streamUrl)
-                putExtra(PlayerActivity.EXTRA_TITLE, streamTitle)
-            })
+                putExtra(PlayerActivity.EXTRA_URL, url)
+            }
+            startActivity(i)
             stopSelf()
         }
-    }
 
-    private fun setupDrag(params: WindowManager.LayoutParams) {
-        var ix = 0; var iy = 0; var tx = 0f; var ty = 0f
-        floatingView?.setOnTouchListener { _, e ->
-            when (e.action) {
-                MotionEvent.ACTION_DOWN -> { ix = params.x; iy = params.y; tx = e.rawX; ty = e.rawY; true }
-                MotionEvent.ACTION_MOVE -> {
-                    params.x = ix + (e.rawX - tx).toInt()
-                    params.y = iy + (e.rawY - ty).toInt()
-                    windowManager?.updateViewLayout(floatingView, params); true
-                }
-                else -> false
-            }
+        // Close button
+        floatView?.findViewById<ImageButton>(R.id.btnFloatClose)?.setOnClickListener {
+            stopSelf()
         }
-    }
 
-    private fun setupPlayer() {
-        player = ExoPlayer.Builder(this).build().also { exo ->
-            binding.floatingPlayerView.player = exo
-            val item = when {
-                streamUrl.contains(".m3u8") ->
-                    MediaItem.Builder().setUri(streamUrl).setMimeType(MimeTypes.APPLICATION_M3U8).build()
-                streamUrl.contains(".mpd") ->
-                    MediaItem.Builder().setUri(streamUrl).setMimeType(MimeTypes.APPLICATION_MPD).build()
-                else -> MediaItem.fromUri(streamUrl)
-            }
-            exo.setMediaItem(item); exo.prepare(); exo.play()
+        // ExoPlayer
+        player = ExoPlayer.Builder(this).build()
+        floatView?.findViewById<PlayerView>(R.id.floatPlayerView)?.player = player
+
+        val dataSourceFactory = DefaultHttpDataSource.Factory()
+            .setUserAgent("Sportzfy/6.0 Android")
+
+        val mediaSource = when {
+            url.contains(".mpd", ignoreCase = true) ->
+                DashMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(url))
+            else ->
+                HlsMediaSource.Factory(dataSourceFactory).createMediaSource(MediaItem.fromUri(url))
         }
+
+        player?.setMediaSource(mediaSource)
+        player?.prepare()
+        player?.playWhenReady = true
+
+        windowManager?.addView(floatView, params)
     }
 
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val ch = NotificationChannel(CHANNEL_ID, "Sportzfy Player", NotificationManager.IMPORTANCE_LOW)
-            (getSystemService(NotificationManager::class.java)).createNotificationChannel(ch)
-        }
-    }
-
-    private fun buildNotification(): Notification {
-        val pi = PendingIntent.getService(
-            this, 0, Intent(this, FloatingPlayerService::class.java),
-            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Floating Player")
-            .setContentText(streamTitle)
-            .setSmallIcon(android.R.drawable.ic_media_play)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "বন্ধ করুন", pi)
-            .build()
-    }
+    private val Int.dp get() = (this * resources.displayMetrics.density).toInt()
 
     override fun onDestroy() {
         super.onDestroy()
-        player?.release(); player = null
-        floatingView?.let { windowManager?.removeView(it) }; floatingView = null
+        player?.release()
+        floatView?.let { windowManager?.removeView(it) }
     }
+
+    private fun createNotificationChannel() {
+        val ch = NotificationChannel(CHANNEL_ID, getString(R.string.channel_name), NotificationManager.IMPORTANCE_LOW)
+        getSystemService(NotificationManager::class.java).createNotificationChannel(ch)
+    }
+
+    private fun buildNotification(): Notification =
+        NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(getString(R.string.floating_player))
+            .setContentText("Sportzfy is playing")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .build()
 }
