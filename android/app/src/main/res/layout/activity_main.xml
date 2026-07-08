@@ -1,95 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/bg_primary">
+    android:fitsSystemWindows="true">
 
-    <!-- Top bar — exactly like web screenshot -->
+    <!-- Main content -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:background="@color/bg_primary"
-        android:elevation="4dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/bg_primary">
 
-        <!-- Logo + Name -->
-        <TextView
-            android:layout_width="0dp"
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/bg_primary"
+            android:elevation="4dp"
+            app:contentInsetStartWithNavigation="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingRight="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Sportzfy"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"
+                    android:fontFamily="sans-serif-black"/>
+
+                <View
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:background="@drawable/bg_live_dot"
+                    android:layout_marginEnd="4dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="LIVE"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/live_red"
+                    android:letterSpacing="0.05"/>
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border"/>
+
+        <!-- Fragment container -->
+        <FrameLayout
+            android:id="@+id/navHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <!-- Bottom nav -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNav"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Sportzfy"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:fontFamily="sans-serif-black"/>
-
-        <!-- Live dot -->
-        <View
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:background="@drawable/bg_live_dot"
-            android:layout_marginEnd="4dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="LIVE"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:textColor="@color/live_red"
-            android:letterSpacing="0.05"
-            android:layout_marginEnd="16dp"/>
-
-        <!-- Refresh icon -->
-        <TextView
-            android:id="@+id/btnRefresh"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:text="↻"
-            android:textSize="20sp"
-            android:textColor="@color/text_muted"
-            android:gravity="center"
-            android:layout_marginEnd="8dp"/>
-
-        <!-- Search icon -->
-        <TextView
-            android:id="@+id/btnSearch"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:text="⌕"
-            android:textSize="22sp"
-            android:textColor="@color/text_muted"
-            android:gravity="center"/>
+            android:background="@color/surface"
+            app:itemIconTint="@color/bottom_nav_color"
+            app:itemTextColor="@color/bottom_nav_color"
+            app:menu="@menu/bottom_nav_menu"
+            app:labelVisibilityMode="labeled"/>
     </LinearLayout>
 
-    <!-- 1dp divider line -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/border"/>
-
-    <!-- Fragment container -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/navHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-
-    <!-- Bottom Navigation -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <!-- Navigation Drawer -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navView"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
         android:background="@color/surface"
-        app:itemIconTint="@color/bottom_nav_color"
-        app:itemTextColor="@color/bottom_nav_color"
-        app:menu="@menu/bottom_nav_menu"
-        app:labelVisibilityMode="labeled"/>
+        app:headerLayout="@layout/header_lay"
+        app:menu="@menu/menu_nav"
+        app:itemTextColor="@color/text_primary"
+        app:itemIconTint="@color/accent"/>
 
-</LinearLayout>
+</androidx.drawerlayout.widget.DrawerLayout>
