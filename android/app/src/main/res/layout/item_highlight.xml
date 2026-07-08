@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:layout_marginLeft="14dp" android:layout_marginRight="14dp"
+    android:layout_marginBottom="10dp"
+    app:cardBackgroundColor="@color/card_bg" app:cardCornerRadius="14dp"
+    app:cardElevation="0dp" app:strokeColor="@color/card_border" app:strokeWidth="1dp">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:padding="14dp" android:gravity="center_vertical">
+
+        <!-- Thumb placeholder with play icon -->
+        <FrameLayout android:id="@+id/layoutThumb"
+            android:layout_width="100dp" android:layout_height="64dp"
+            android:background="@color/surface" android:layout_marginEnd="14dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="▶" android:textSize="24sp" android:textColor="@color/accent"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/tvHighlightTitle"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textSize="13sp" android:textStyle="bold" android:textColor="@color/text_primary"
+                android:maxLines="2" android:ellipsize="end" android:layout_marginBottom="6dp"/>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:id="@+id/tvHighlightSport"
+                    android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                    android:textSize="11sp" android:textColor="@color/accent"/>
+                <TextView android:id="@+id/tvHighlightDuration"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textSize="11sp" android:textColor="@color/text_muted"
+                    android:background="@color/surface"
+                    android:paddingLeft="6dp" android:paddingRight="6dp"
+                    android:paddingTop="2dp" android:paddingBottom="2dp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
