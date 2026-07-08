@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/bg_primary">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="20dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="🌐  Network Stream" android:textSize="20sp" android:textStyle="bold"
+            android:textColor="@color/text_primary" android:layout_marginBottom="6dp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Play any M3U8, HLS, RTMP or direct stream URL"
+            android:textSize="13sp" android:textColor="@color/text_muted" android:layout_marginBottom="24dp"/>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Stream Name (optional)" android:textSize="12sp"
+            android:textColor="@color/text_muted" android:layout_marginBottom="6dp"/>
+        <FrameLayout android:layout_width="match_parent" android:layout_height="48dp"
+            android:layout_marginBottom="16dp" android:background="@drawable/bg_search">
+            <EditText android:id="@+id/etStreamName"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:hint="My Stream" android:textColorHint="@color/text_dim"
+                android:textColor="@color/text_primary" android:background="@null"
+                android:paddingLeft="14dp" android:paddingRight="14dp" android:textSize="14sp"/>
+        </FrameLayout>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Stream URL *" android:textSize="12sp"
+            android:textColor="@color/text_muted" android:layout_marginBottom="6dp"/>
+        <FrameLayout android:layout_width="match_parent" android:layout_height="52dp"
+            android:layout_marginBottom="8dp" android:background="@drawable/bg_search">
+            <EditText android:id="@+id/etStreamUrl"
+                android:layout_width="match_parent" android:layout_height="match_parent"
+                android:hint="https://example.com/stream.m3u8"
+                android:textColorHint="@color/text_dim" android:textColor="@color/text_primary"
+                android:background="@null" android:paddingLeft="14dp" android:paddingRight="14dp"
+                android:textSize="13sp" android:inputType="textUri"/>
+        </FrameLayout>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Supports: M3U8 · HLS · DASH · RTSP · MP4"
+            android:textSize="11sp" android:textColor="@color/text_dim"
+            android:layout_marginBottom="24dp"/>
+
+        <Button android:id="@+id/btnPlayStream"
+            android:layout_width="match_parent" android:layout_height="50dp"
+            android:text="▶  Play Stream" android:textSize="15sp" android:textStyle="bold"
+            android:textColor="@color/bg_primary" android:background="@drawable/bg_btn_watch"
+            android:stateListAnimator="@null" android:layout_marginBottom="12dp"/>
+
+        <Button android:id="@+id/btnClearHistory"
+            android:layout_width="match_parent" android:layout_height="44dp"
+            android:text="🗑  Clear History" android:textSize="13sp"
+            android:textColor="@color/text_muted" android:background="@drawable/bg_search"
+            android:stateListAnimator="@null"/>
+    </LinearLayout>
+</ScrollView>
