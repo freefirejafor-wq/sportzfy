@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="none">
-        <item android:id="@+id/drawer_cricket_score"  android:title="🏏 Cricket Score"     android:icon="@drawable/ic_settings"/>
-        <item android:id="@+id/drawer_football_score" android:title="⚽ Football Score"    android:icon="@drawable/ic_soccer"/>
-        <item android:id="@+id/drawer_network_stream" android:title="🌐 Network Stream"    android:icon="@drawable/ic_search_home"/>
-        <item android:id="@+id/drawer_playlists"      android:title="📋 Playlists"         android:icon="@drawable/ic_list"/>
-        <item android:id="@+id/drawer_floating_player" android:title="🪟 Floating Player"  android:icon="@drawable/ic_settings"/>
-        <item android:id="@+id/drawer_force_low"      android:title="📶 Force Low Quality" android:icon="@drawable/ic_settings"/>
-        <item android:id="@+id/drawer_settings"       android:title="⚙️ Settings"          android:icon="@drawable/ic_settings"/>
+        <item android:id="@+id/drawer_cricket_score"   android:title="🏏 Cricket Score"/>
+        <item android:id="@+id/drawer_football_score"  android:title="⚽ Football Score"/>
+        <item android:id="@+id/drawer_network_stream"  android:title="🌐 Network Stream"/>
+        <item android:id="@+id/drawer_playlists"       android:title="📋 Playlists"/>
+        <item android:id="@+id/drawer_floating_player" android:title="🪟 Floating Player"/>
+        <item android:id="@+id/drawer_force_low"       android:title="📶 Force Low Quality"/>
+        <item android:id="@+id/drawer_settings"        android:title="⚙️ Settings"/>
     </group>
     <group android:checkableBehavior="none">
-        <item android:id="@+id/drawer_share"    android:title="📤 Share App"   android:icon="@drawable/ic_whatsapp"/>
-        <item android:id="@+id/drawer_telegram" android:title="✈️ Telegram"    android:icon="@drawable/ic_telegram"/>
-        <item android:id="@+id/drawer_website"  android:title="🌍 Website"     android:icon="@drawable/ic_search_home"/>
-        <item android:id="@+id/drawer_whatsapp" android:title="💬 WhatsApp"    android:icon="@drawable/ic_whatsapp"/>
-        <item android:id="@+id/drawer_exit"     android:title="❌ Exit"        android:icon="@drawable/ic_settings"/>
+        <item android:id="@+id/drawer_share"    android:title="📤 Share App"/>
+        <item android:id="@+id/drawer_telegram" android:title="✈️ Telegram"/>
+        <item android:id="@+id/drawer_website"  android:title="🌍 Website"/>
+        <item android:id="@+id/drawer_whatsapp" android:title="💬 WhatsApp"/>
+        <item android:id="@+id/drawer_exit"     android:title="❌ Exit"/>
     </group>
 </menu>
