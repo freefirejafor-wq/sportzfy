@@ -1,60 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_primary">
 
+    <!-- Background blobs -->
+    <View
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:background="@drawable/bg_splash_blob_primary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="-60dp"
+        android:layout_marginStart="-60dp"
+        android:alpha="0.4"/>
+
+    <View
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:background="@drawable/bg_splash_blob_secondary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="-40dp"
+        android:layout_marginEnd="-40dp"
+        android:alpha="0.3"/>
+
+    <!-- Logo -->
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@mipmap/ic_launcher_foreground"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tvAppName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintVertical_bias="0.45"/>
+
+    <TextView
+        android:id="@+id/tvAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sportzfy"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:fontFamily="sans-serif-black"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/ivLogo"
+        app:layout_constraintBottom_toTopOf="@+id/tvTagline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvTagline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Live Sports · Anywhere · Free"
+        android:textSize="14sp"
+        android:textColor="@color/text_muted"
+        android:letterSpacing="0.05"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@+id/tvAppName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Loading dots at bottom -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- S logo circle -->
-        <FrameLayout
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/bg_splash_logo"
-            android:layout_marginBottom="24dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="S"
-                android:textSize="52sp"
-                android:textStyle="bold"
-                android:textColor="@color/accent"
-                android:fontFamily="sans-serif-black"/>
-        </FrameLayout>
-
-        <!-- App name -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sportzfy"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary"
-            android:fontFamily="sans-serif-black"
-            android:letterSpacing="0.04"/>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:indeterminateTint="@color/accent"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="v6.0"
-            android:textSize="12sp"
-            android:textColor="@color/text_dim"
-            android:layout_marginTop="8dp"/>
+            android:text="Loading…"
+            android:textSize="13sp"
+            android:textColor="@color/text_muted"
+            android:layout_marginStart="10dp"/>
     </LinearLayout>
 
-    <!-- Loading indicator -->
-    <ProgressBar
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="60dp"
-        android:indeterminateTint="@color/accent"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="v8.0"
+        android:textSize="11sp"
+        android:textColor="@color/text_dim"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
