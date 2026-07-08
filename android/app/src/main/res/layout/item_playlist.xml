@@ -39,7 +39,7 @@
         <ImageView android:id="@+id/btnDeletePlaylist"
             android:layout_width="36dp" android:layout_height="36dp"
             android:src="@android:drawable/ic_menu_delete"
-            android:imageTintList="@color/live_red"
+            app:tint="@color/live_red"
             android:padding="6dp" android:layout_marginStart="8dp"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
