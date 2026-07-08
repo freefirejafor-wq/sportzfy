@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/nav_live"       android:title="Live"        android:icon="@drawable/ic_live_events"/>
-    <item android:id="@+id/nav_sports"     android:title="Sports"      android:icon="@drawable/ic_categories"/>
-    <item android:id="@+id/nav_categories" android:title="Categories"  android:icon="@drawable/ic_settings"/>
-    <item android:id="@+id/nav_favorites"  android:title="Favorites"   android:icon="@drawable/baseline_star_24"/>
-    <item android:id="@+id/nav_highlights" android:title="Highlights"  android:icon="@drawable/ic_list"/>
+    <item android:id="@+id/nav_live"       android:title="Live"        android:icon="@android:drawable/ic_menu_today"/>
+    <item android:id="@+id/nav_sports"     android:title="Sports"      android:icon="@android:drawable/ic_menu_compass"/>
+    <item android:id="@+id/nav_categories" android:title="Categories"  android:icon="@android:drawable/ic_menu_agenda"/>
+    <item android:id="@+id/nav_favorites"  android:title="Favorites"   android:icon="@android:drawable/btn_star_big_on"/>
+    <item android:id="@+id/nav_highlights" android:title="Highlights"  android:icon="@android:drawable/ic_menu_slideshow"/>
 </menu>
