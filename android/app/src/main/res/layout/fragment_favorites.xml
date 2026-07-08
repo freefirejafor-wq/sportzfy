@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_primary">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="52dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingLeft="16dp" android:paddingRight="16dp">
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="⭐  Favorites"
+            android:textSize="16sp" android:textStyle="bold" android:textColor="@color/text_primary"/>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerFavorites"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingLeft="8dp" android:paddingRight="8dp"
+        android:paddingTop="8dp" android:paddingBottom="80dp"
+        android:clipToPadding="false"/>
+
+    <LinearLayout android:id="@+id/layoutEmpty"
+        android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:orientation="vertical" android:gravity="center" android:visibility="gone">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="⭐" android:textSize="48sp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="No favorites yet" android:textSize="16sp" android:textStyle="bold"
+            android:textColor="@color/text_muted" android:layout_marginTop="12dp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Long-press a channel to add" android:textSize="13sp"
+            android:textColor="@color/text_dim" android:layout_marginTop="6dp"/>
+    </LinearLayout>
+</LinearLayout>
