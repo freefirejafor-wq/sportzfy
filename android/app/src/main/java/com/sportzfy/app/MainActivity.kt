@@ -45,6 +45,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 else -> false
             }
         }
+
+        // OTA আপডেট চেক — app চালু হলে background-এ দেখবে
+        UpdateChecker.check(this)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -59,8 +62,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val prefs = getSharedPreferences("settings", MODE_PRIVATE)
                 val isLow = prefs.getBoolean("force_low_quality", false)
                 prefs.edit().putBoolean("force_low_quality", !isLow).apply()
-                val msg = if (!isLow) "✅ Force Low Quality ON" else "❌ Force Low Quality OFF"
-                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, if (!isLow) "✅ Force Low Quality ON" else "❌ Force Low Quality OFF", Toast.LENGTH_SHORT).show()
             }
             R.id.drawer_settings        -> { loadFragment(SettingsFragment()); binding.bottomNav.menu.findItem(R.id.nav_live)?.isChecked = false }
             R.id.drawer_share           -> shareApp()
@@ -73,29 +75,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun openWeb(url: String, title: String) {
-        val intent = Intent(this, WebViewActivity::class.java)
-        intent.putExtra("url", url)
-        intent.putExtra("title", title)
-        startActivity(intent)
+        startActivity(Intent(this, WebViewActivity::class.java).apply {
+            putExtra("url", url); putExtra("title", title)
+        })
     }
 
     private fun shareApp() {
-        val intent = Intent(Intent.ACTION_SEND).apply {
+        startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, "Watch live sports free! Download Sportzfy: https://sportzfy.app")
-        }
-        startActivity(Intent.createChooser(intent, "Share Sportzfy"))
+        }, "Share Sportzfy"))
     }
 
     fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.navHostFragment, fragment)
-            .commit()
+            .replace(R.id.navHostFragment, fragment).commit()
     }
 
     override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START))
             binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else super.onBackPressed()
+        else super.onBackPressed()
     }
 }
