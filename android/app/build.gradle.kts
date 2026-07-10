@@ -11,8 +11,9 @@ android {
         applicationId = "com.sportzfy.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 8
-        versionName = "8.0"
+        versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 103
+        versionName = "1.0.${System.getenv("GITHUB_RUN_NUMBER") ?: "103"}"
+        buildConfigField("int", "UPDATE_VERSION_CODE", "${System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 103}")
     }
 
     buildTypes {
@@ -26,7 +27,10 @@ android {
         }
     }
 
-    buildFeatures { viewBinding = true }
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
