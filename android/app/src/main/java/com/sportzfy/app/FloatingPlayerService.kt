@@ -14,6 +14,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
@@ -61,16 +62,28 @@ class FloatingPlayerService : Service() {
         val view = LayoutInflater.from(this).inflate(R.layout.floating_player, null)
         floatingView = view
 
-        // ExoPlayer — plain HLS/DASH play (floating doesn't re-apply DRM)
+        // IDs from floating_player.xml:
+        // floatPlayerView, tvFloatTitle, tvFloatName, btnFloatExpand, btnFloatClose, btnFloatPlayPause
+
         player = ExoPlayer.Builder(this).build().also { exo ->
-            view.findViewById<PlayerView>(R.id.floatingPlayerView).player = exo
+            view.findViewById<PlayerView>(R.id.floatPlayerView).player = exo
             exo.setMediaItem(MediaItem.fromUri(url))
             exo.prepare()
             exo.playWhenReady = true
         }
 
-        // Expand → reopen full PlayerActivity
-        view.findViewById<ImageButton>(R.id.btnExpand).setOnClickListener {
+        view.findViewById<TextView>(R.id.tvFloatTitle).text = title
+        view.findViewById<TextView>(R.id.tvFloatName).text  = name
+
+        val btnPP = view.findViewById<ImageButton>(R.id.btnFloatPlayPause)
+        btnPP.setOnClickListener {
+            player?.let { p ->
+                if (p.isPlaying) { p.pause(); btnPP.setImageResource(android.R.drawable.ic_media_play) }
+                else             { p.play();  btnPP.setImageResource(android.R.drawable.ic_media_pause) }
+            }
+        }
+
+        view.findViewById<ImageButton>(R.id.btnFloatExpand).setOnClickListener {
             startActivity(Intent(this, PlayerActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 putExtra(PlayerActivity.EXTRA_STREAM_URL,  url)
@@ -80,10 +93,8 @@ class FloatingPlayerService : Service() {
             stopSelf()
         }
 
-        // Close
         view.findViewById<ImageButton>(R.id.btnFloatClose).setOnClickListener { stopSelf() }
 
-        // Drag to move
         view.setOnTouchListener { _, ev ->
             when (ev.action) {
                 MotionEvent.ACTION_DOWN -> {
