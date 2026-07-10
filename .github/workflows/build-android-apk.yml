@@ -41,35 +41,22 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*') }}
           restore-keys: ${{ runner.os }}-gradle-
 
-      - name: 🔨 Build Debug APK
+      - name: 🔨 Build Debug APK (signed — installable)
         working-directory: android
         env:
           GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: ./gradlew assembleDebug --stacktrace
 
-      - name: 📦 Build Release APK
-        working-directory: android
-        env:
-          GITHUB_RUN_NUMBER: ${{ github.run_number }}
-        run: ./gradlew assembleRelease --stacktrace
-
       - name: 📝 Rename APK
         run: |
-          cp android/app/build/outputs/apk/release/app-release-unsigned.apk \
-             android/app/build/outputs/apk/release/sportzfy.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk \
+             android/app/build/outputs/apk/debug/sportzfy.apk
 
-      - name: ⬆️ Upload Debug APK (Artifact)
+      - name: ⬆️ Upload APK (Artifact)
         uses: actions/upload-artifact@v4
         with:
-          name: Sportzfy-Debug-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 30
-
-      - name: ⬆️ Upload Release APK (Artifact)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Sportzfy-Release-APK
-          path: android/app/build/outputs/apk/release/sportzfy.apk
+          name: Sportzfy-APK
+          path: android/app/build/outputs/apk/debug/sportzfy.apk
           retention-days: 30
 
       - name: 🚀 Create GitHub Release
@@ -87,7 +74,9 @@ jobs:
             #### ⬇️ Install করুন:
             নিচের `sportzfy.apk` ডাউনলোড করে মোবাইলে install করুন।
             Unknown sources চালু থাকলে app নিজে নিজে আপডেট হবে।
-          files: android/app/build/outputs/apk/release/sportzfy.apk
+
+            > ✅ এই APK Debug-signed — সরাসরি install করা যাবে।
+          files: android/app/build/outputs/apk/debug/sportzfy.apk
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
