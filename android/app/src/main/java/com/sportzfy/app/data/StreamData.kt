@@ -103,18 +103,14 @@ val ALL_STREAMS: List<Stream> = listOf(
     Stream("cricket-gold",         "Cricket Gold",             Quality.HD,  "https://streams2.sofast.tv/ptnr-yupptv/title-cricketgold/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/b2048bb8-1686-4432-aa50-647245383e0c/bfc6a36e-c250-4afe-b6c9-2bc57855bb7d/4.m3u8", "Cricket"),
 
 
-    // ── FOX Sports / FOX One (World Cup) ─────────────────────────────
-    Stream("fox-sports-lk1",  "⚽ FOX Sports 1 (LK-1)",  Quality.HD,  "https://hls.livekhelatv.website/mks/lktv/fox-sports-1/master.m3u8",            "FIFA"),
-    Stream("fox-sports-lk2",  "⚽ FOX Sports 1 (LK-2)",  Quality.HD,  "https://hls.livekhelatv.website/mks/lktv/fox-sports/master.m3u8",              "FIFA"),
-    Stream("fox-sports-and",  "⚽ FOX Sports 1 (AN)",    Quality.HD,  "https://andro.226503.xyz/checklist/androstreamliveFS1.m3u8",                   "FIFA"),
-    Stream("fox-one-wc",      "⚽ FOX ONE World Cup",    Quality.HD,  "https://hls.livekhelatv.website/mks/lktv/fox-one/master.m3u8",                 "FIFA"),
-    Stream("fox-sports-cdn1", "⚽ FOX Sports (CDN-1)",   Quality.HD,  "https://1nyaler.streamhostingcdn.top/stream/25/index.m3u8",                    "FIFA"),
-    Stream("fox-sports-cdn2", "⚽ FOX Sports (CDN-2)",   Quality.HD,  "https://1nyaler.streamhostingcdn.top/stream/26/index.m3u8",                    "FIFA"),
-    // ── YouTube Live Channels ─────────────────────────────────────────
-    Stream("cazetv-invidious",  "🔴 CazéTV Live (Invidious)", Quality.FHD, "https://yewtu.be/@CazeTV/live",          "YouTube", format = "youtube"),
-    Stream("cazetv-piped",      "🔴 CazéTV Live (Piped)",     Quality.FHD, "https://piped.video/@CazeTV/live",        "YouTube", format = "youtube"),
-    Stream("foxsports-invidious","🔴 FOX Sports Live (Invidious)",Quality.FHD,"https://yewtu.be/@foxsports/live",     "YouTube", format = "youtube"),
-    Stream("foxsports-piped",   "🔴 FOX Sports Live (Piped)", Quality.FHD, "https://piped.video/@foxsports/live",     "YouTube", format = "youtube"),
+    // ── YouTube Live — Embed Player (geo-restriction bypass) ─────────
+    // Uses YouTube IFrame embed — no anti-bot, works from Bangladesh
+    Stream("cazetv-embed",   "📺 CazéTV Live",    Quality.FHD,
+        "https://www.youtube.com/embed/live_stream?channel=UCZiYbVptd3PVPf4f6eR6UaQ&autoplay=1&controls=1",
+        "YouTube", format = "youtube"),
+    Stream("foxsports-embed","📺 FOX Sports Live", Quality.FHD,
+        "https://www.youtube.com/embed/live_stream?channel=UCwNqHDsnBCKT-olwJwIFyfg&autoplay=1&controls=1",
+        "YouTube", format = "youtube"),
 
 )
 
