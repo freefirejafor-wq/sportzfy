@@ -36,16 +36,19 @@ class WebViewActivity : AppCompatActivity() {
             settings.apply {
                 javaScriptEnabled                = true
                 domStorageEnabled                = true
-                mediaPlaybackRequiresUserGesture = false
+                mediaPlaybackRequiresUserGesture = false   // auto-play video
                 allowContentAccess               = true
                 allowFileAccess                  = true
                 mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 userAgentString  = CHROME_UA
-                loadWithOverviewMode = true
-                useWideViewPort      = true
-                builtInZoomControls  = false
-                cacheMode            = WebSettings.LOAD_DEFAULT
-                databaseEnabled      = true
+                loadWithOverviewMode             = true
+                useWideViewPort                  = true
+                builtInZoomControls              = false
+                cacheMode                        = WebSettings.LOAD_DEFAULT
+                databaseEnabled                  = true
+                // Needed for YouTube embed cross-origin iframes
+                @Suppress("DEPRECATION")
+                allowUniversalAccessFromFileURLs = true
             }
 
             webViewClient = object : WebViewClient() {
@@ -55,13 +58,15 @@ class WebViewActivity : AppCompatActivity() {
                 override fun onPageFinished(view: WebView, url: String) {
                     binding.progressBar.visibility = ProgressBar.GONE
                 }
-                override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+                override fun shouldOverrideUrlLoading(
+                    view: WebView, request: WebResourceRequest
+                ): Boolean {
                     val host = request.url.host ?: return false
-                    // Allow all Invidious / Piped / YouTube / Google CDN domains to load inside WebView
+                    // Allow all YouTube / Google / Invidious / Piped domains inside WebView
                     val allowed = listOf(
                         "youtube.com", "youtu.be", "googlevideo.com", "ggpht.com",
-                        "ytimg.com", "yewtu.be", "piped.video", "invidious",
-                        "googleusercontent.com"
+                        "ytimg.com", "youtube-nocookie.com", "googleusercontent.com",
+                        "googleapis.com", "google.com"
                     )
                     return allowed.none { host.contains(it) }
                 }
@@ -69,11 +74,11 @@ class WebViewActivity : AppCompatActivity() {
 
             webChromeClient = object : WebChromeClient() {
                 override fun onProgressChanged(view: WebView, newProgress: Int) {
-                    if (newProgress == 100) binding.progressBar.visibility = ProgressBar.GONE
-                    else binding.progressBar.visibility = ProgressBar.VISIBLE
+                    binding.progressBar.visibility =
+                        if (newProgress == 100) ProgressBar.GONE else ProgressBar.VISIBLE
                 }
 
-                // Full-screen video support
+                // ── Full-screen video support ────────────────────────
                 override fun onShowCustomView(view: View, callback: CustomViewCallback) {
                     customView?.let { callback.onCustomViewHidden(); return }
                     customView = view
@@ -82,6 +87,7 @@ class WebViewActivity : AppCompatActivity() {
                         view, FrameLayout.LayoutParams(-1, -1)
                     )
                     binding.webView.visibility = View.GONE
+                    @Suppress("DEPRECATION")
                     window.decorView.systemUiVisibility = (
                         View.SYSTEM_UI_FLAG_FULLSCREEN or
                         View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
@@ -95,6 +101,7 @@ class WebViewActivity : AppCompatActivity() {
                     customViewCallback?.onCustomViewHidden()
                     customViewCallback = null
                     binding.webView.visibility = View.VISIBLE
+                    @Suppress("DEPRECATION")
                     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
                 }
             }
@@ -107,18 +114,19 @@ class WebViewActivity : AppCompatActivity() {
 
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onBackPressed() {
+        // Exit fullscreen first
         customView?.let {
-            webChromeClient?.onHideCustomView(); return
+            (webChromeClientRef as? WebChromeClient)?.onHideCustomView()
+            return
         }
         if (binding.webView.canGoBack()) binding.webView.goBack()
         else super.onBackPressed()
     }
 
-    // ↓ expose webChromeClient so onBackPressed can call it
-    private val webChromeClient get() = binding.webView.webChromeClient as? WebChromeClient
+    private val webChromeClientRef get() = binding.webView.webChromeClient
 
-    override fun onPause()  { super.onPause();  binding.webView.onPause() }
-    override fun onResume() { super.onResume(); binding.webView.onResume() }
+    override fun onPause()   { super.onPause();   binding.webView.onPause() }
+    override fun onResume()  { super.onResume();  binding.webView.onResume() }
     override fun onDestroy() {
         binding.webView.stopLoading()
         binding.webView.destroy()
