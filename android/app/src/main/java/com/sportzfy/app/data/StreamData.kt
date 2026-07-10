@@ -100,10 +100,15 @@ val ALL_STREAMS: List<Stream> = listOf(
     Stream("euro-tv",              "Euro TV",                  Quality.HD,  "https://stream.ottplus.bd/live/euro_sports_hd_abr/live/euro_sports_hd/chunks.m3u8",                                                                            "Sports"),
 
     // ── Cricket ──────────────────────────────────────────────────────
-    Stream("cricket-gold",         "Cricket Gold",             Quality.HD,  "https://streams2.sofast.tv/ptnr-yupptv/title-cricketgold/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/b2048bb8-1686-4432-aa50-647245383e0c/bfc6a36e-c250-4afe-b6c9-2bc57855bb7d/4.m3u8", "Cricket")
+    Stream("cricket-gold",         "Cricket Gold",             Quality.HD,  "https://streams2.sofast.tv/ptnr-yupptv/title-cricketgold/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/b2048bb8-1686-4432-aa50-647245383e0c/bfc6a36e-c250-4afe-b6c9-2bc57855bb7d/4.m3u8", "Cricket"),
+
+    // ── YouTube Live Channels ─────────────────────────────────────────
+    Stream("cazetv-youtube",    "🔴 CazéTV YouTube Live",     Quality.FHD, "https://www.youtube.com/@CazeTV/live",     "YouTube", format = "youtube"),
+    Stream("foxsports-youtube", "🔴 FOX Sports YouTube Live", Quality.FHD, "https://www.youtube.com/@foxsports/live",  "YouTube", format = "youtube"),
+
 )
 
-val STREAM_CATEGORIES = listOf("All", "FIFA", "NongorPlay", "beIN", "Sports", "Cricket")
+val STREAM_CATEGORIES = listOf("All", "FIFA", "YouTube", "NongorPlay", "beIN", "Sports", "Cricket")
 
 fun getStreamsByCategory(category: String): List<Stream> =
     if (category == "All") ALL_STREAMS else ALL_STREAMS.filter { it.category == category }
