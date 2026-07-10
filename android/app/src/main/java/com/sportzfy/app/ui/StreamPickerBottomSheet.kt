@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.sportzfy.app.PlayerActivity
+import com.sportzfy.app.WebViewActivity
 import com.sportzfy.app.R
 import com.sportzfy.app.data.ALL_STREAMS
 import com.sportzfy.app.data.Quality
@@ -83,16 +84,26 @@ class StreamPickerBottomSheet : BottomSheetDialogFragment() {
 
     private fun launchPlayer(stream: Stream) {
         dismiss()
-        requireContext().startActivity(
-            Intent(requireContext(), PlayerActivity::class.java).apply {
-                putExtra(PlayerActivity.EXTRA_STREAM_URL,  stream.url)
-                putExtra(PlayerActivity.EXTRA_STREAM_NAME, stream.name)
-                putExtra(PlayerActivity.EXTRA_MATCH_TITLE, matchTitle)
-                putExtra(PlayerActivity.EXTRA_FORMAT,      stream.format)
-                stream.drmKid?.let { putExtra(PlayerActivity.EXTRA_DRM_KID, it) }
-                stream.drmKey?.let { putExtra(PlayerActivity.EXTRA_DRM_KEY, it) }
-            }
-        )
+        if (stream.format == "youtube") {
+            // YouTube channels open in WebView (cannot be played natively via ExoPlayer)
+            requireContext().startActivity(
+                Intent(requireContext(), WebViewActivity::class.java).apply {
+                    putExtra("url",   stream.url)
+                    putExtra("title", stream.name)
+                }
+            )
+        } else {
+            requireContext().startActivity(
+                Intent(requireContext(), PlayerActivity::class.java).apply {
+                    putExtra(PlayerActivity.EXTRA_STREAM_URL,  stream.url)
+                    putExtra(PlayerActivity.EXTRA_STREAM_NAME, stream.name)
+                    putExtra(PlayerActivity.EXTRA_MATCH_TITLE, matchTitle)
+                    putExtra(PlayerActivity.EXTRA_FORMAT,      stream.format)
+                    stream.drmKid?.let { putExtra(PlayerActivity.EXTRA_DRM_KID, it) }
+                    stream.drmKey?.let { putExtra(PlayerActivity.EXTRA_DRM_KEY, it) }
+                }
+            )
+        }
     }
 
     // ── Custom URL input dialog ───────────────────────────────────────
