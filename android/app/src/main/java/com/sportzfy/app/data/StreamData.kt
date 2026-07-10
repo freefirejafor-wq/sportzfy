@@ -19,7 +19,7 @@ val ALL_STREAMS: List<Stream> = listOf(
     // ── FIFA / World Cup ──────────────────────────────────────────────
     Stream("fifa-wc-eng-master",   "FIFA WC ENG (Master)",     Quality.FHD, "https://hls.livekhelatv.website/mks/lktv/fifa-worldcup-eng/master.m3u8",                                                                                      "FIFA"),
     Stream("fifa-wc-eng-1080p",    "FIFA WC ENG (1080p)",      Quality.FHD, "https://hls.livekhelatv.website/mks/lktv/s/fifa-worldcup-eng/playlist/1080p_FHD/livekhela.m3u8",                                                              "FIFA"),
-    Stream("caze-tv-4k",           "Caze TV (FIFA 4K)",        Quality.FHD, "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/1080p-vtt/index.m3u8",                                                                        "FIFA"),
+    Stream("caze-tv-4k",           "📺 CazéTV Live",        Quality.FHD, "https://dfr80qz435crc.cloudfront.net/MNOP/Amagi/Caze/Caze_TV_BR/1080p-vtt/index.m3u8",                                                                        "FIFA"),
     Stream("fifa-plus-english",    "FIFA+ English",            Quality.FHD, "https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8",                       "FIFA"),
     Stream("fifa-plus-usa",        "FIFA+ USA",                Quality.FHD, "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8", "FIFA"),
     Stream("fifa-plus-espanol",    "FIFA+ Español",            Quality.FHD, "https://d63fabad.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWVzX0ZJRkFQbHVzU3BhbmlzaF9ITFM/playlist.m3u8",                      "FIFA"),
@@ -102,19 +102,9 @@ val ALL_STREAMS: List<Stream> = listOf(
     // ── Cricket ──────────────────────────────────────────────────────
     Stream("cricket-gold",         "Cricket Gold",             Quality.HD,  "https://streams2.sofast.tv/ptnr-yupptv/title-cricketgold/v1/manifest/611d79b11b77e2f571934fd80ca1413453772ac7/b2048bb8-1686-4432-aa50-647245383e0c/bfc6a36e-c250-4afe-b6c9-2bc57855bb7d/4.m3u8", "Cricket"),
 
-
-    // ── YouTube Live — Embed Player (geo-restriction bypass) ─────────
-    // Uses YouTube IFrame embed — no anti-bot, works from Bangladesh
-    Stream("cazetv-embed",   "📺 CazéTV Live",    Quality.FHD,
-        "https://www.youtube.com/embed/live_stream?channel=UCZiYbVptd3PVPf4f6eR6UaQ&autoplay=1&controls=1",
-        "YouTube", format = "youtube"),
-    Stream("foxsports-embed","📺 FOX Sports Live", Quality.FHD,
-        "https://www.youtube.com/embed/live_stream?channel=UCwNqHDsnBCKT-olwJwIFyfg&autoplay=1&controls=1",
-        "YouTube", format = "youtube"),
-
 )
 
-val STREAM_CATEGORIES = listOf("All", "FIFA", "YouTube", "NongorPlay", "beIN", "Sports", "Cricket")
+val STREAM_CATEGORIES = listOf("All", "FIFA", "NongorPlay", "beIN", "Sports", "Cricket")
 
 fun getStreamsByCategory(category: String): List<Stream> =
     if (category == "All") ALL_STREAMS else ALL_STREAMS.filter { it.category == category }
