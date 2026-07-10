@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Base64
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.media3.common.C
@@ -16,6 +17,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import com.sportzfy.app.databinding.ActivityPlayerBinding
+import com.sportzfy.app.ui.StreamPickerBottomSheet
 
 @UnstableApi
 class PlayerActivity : AppCompatActivity() {
@@ -33,6 +35,7 @@ class PlayerActivity : AppCompatActivity() {
     private var player: ExoPlayer? = null
     private lateinit var trackSelector: DefaultTrackSelector
     private var controlsVisible = true
+    private var screenLocked = false
     private val hideRunnable = Runnable { hideControls() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,7 +117,7 @@ class PlayerActivity : AppCompatActivity() {
                 override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
                     binding.progressBuffering.visibility = View.GONE
                     binding.tvBufferingMsg.visibility    = View.GONE
-                    AlertDialog.Builder(this@PlayerActivity)
+                    AlertDialog.Builder(this@PlayerActivity, R.style.DarkDialogTheme)
                         .setTitle("⚠️ Playback Error")
                         .setMessage("Stream could not be loaded.\n\n${error.message}")
                         .setPositiveButton("OK") { d, _ -> d.dismiss() }
@@ -132,12 +135,19 @@ class PlayerActivity : AppCompatActivity() {
             player?.let { if (it.isPlaying) it.pause() else it.play() }
         }
 
+        binding.btnRewind.setOnClickListener  {
+            player?.seekBack()
+        }
+        binding.btnForward.setOnClickListener {
+            player?.seekForward()
+        }
+
         binding.btnBack.setOnClickListener  { finish() }
         binding.btnClose.setOnClickListener { finish() }
 
         binding.btnQuality.setOnClickListener { showQualityDialog() }
 
-        binding.btnStreams.setOnClickListener {
+        binding.btnAddUrl.setOnClickListener {
             StreamPickerBottomSheet.newInstance(matchTitle)
                 .show(supportFragmentManager, "streams")
         }
@@ -145,19 +155,26 @@ class PlayerActivity : AppCompatActivity() {
         binding.btnFloat.setOnClickListener { minimizeToFloating(streamName, matchTitle) }
 
         binding.btnLock.setOnClickListener {
+            screenLocked = true
             hideControls()
-            binding.lockOverlay.visibility = View.VISIBLE
-        }
-        binding.btnUnlock.setOnClickListener {
-            binding.lockOverlay.visibility = View.GONE
-            showControls()
+            Toast.makeText(this, "🔒 Screen locked — tap BACK to unlock", Toast.LENGTH_SHORT).show()
         }
 
         scheduleHide()
     }
 
+    override fun onBackPressed() {
+        if (screenLocked) {
+            screenLocked = false
+            showControls()
+            Toast.makeText(this, "🔓 Unlocked", Toast.LENGTH_SHORT).show()
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     private fun toggleControls() {
-        if (binding.lockOverlay.visibility == View.VISIBLE) return
+        if (screenLocked) return
         if (controlsVisible) hideControls() else showControls()
     }
 
@@ -165,7 +182,7 @@ class PlayerActivity : AppCompatActivity() {
         controlsVisible = true
         binding.topBar.visibility       = View.VISIBLE
         binding.bottomBar.visibility    = View.VISIBLE
-        binding.btnPlayPause.visibility = View.VISIBLE
+        binding.centerControls.visibility = View.VISIBLE
         scheduleHide()
     }
 
@@ -173,7 +190,7 @@ class PlayerActivity : AppCompatActivity() {
         controlsVisible = false
         binding.topBar.visibility       = View.GONE
         binding.bottomBar.visibility    = View.GONE
-        binding.btnPlayPause.visibility = View.GONE
+        binding.centerControls.visibility = View.GONE
     }
 
     private fun scheduleHide() {
@@ -195,15 +212,15 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun showQualityDialog() {
         val qualities = arrayOf("Auto (Recommended)", "1080p FHD", "720p HD", "480p SD", "360p SD")
-        AlertDialog.Builder(this, R.style.QualityDialogTheme)
+        AlertDialog.Builder(this, R.style.DarkDialogTheme)
             .setTitle("🎯 Quality")
             .setItems(qualities) { _, which ->
                 when (which) {
                     0 -> trackSelector.setParameters(trackSelector.buildUponParameters().clearVideoSizeConstraints())
                     1 -> trackSelector.setParameters(trackSelector.buildUponParameters().setMaxVideoSize(1920, 1080))
                     2 -> trackSelector.setParameters(trackSelector.buildUponParameters().setMaxVideoSize(1280, 720))
-                    3 -> trackSelector.setParameters(trackSelector.buildUponParameters().setMaxVideoSize(854, 480))
-                    4 -> trackSelector.setParameters(trackSelector.buildUponParameters().setMaxVideoSize(640, 360))
+                    3 -> trackSelector.setParameters(trackSelector.buildUponParameters().setMaxVideoSize(854,  480))
+                    4 -> trackSelector.setParameters(trackSelector.buildUponParameters().setMaxVideoSize(640,  360))
                 }
             }.show()
     }
