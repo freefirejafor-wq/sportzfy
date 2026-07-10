@@ -93,7 +93,6 @@ class StreamPickerBottomSheet : BottomSheetDialogFragment() {
                     stream.drmKey?.let { putExtra(PlayerActivity.EXTRA_DRM_KEY, it) }
                 }
             )
-        }
     }
 
     // ── Custom URL input dialog ───────────────────────────────────────
